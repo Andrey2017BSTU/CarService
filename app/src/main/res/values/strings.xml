@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">CarService</string>
+    <string name="brand_str">Выберите марку автомобиля*</string>
+    <string name="model_str">Выберите модель автомобиля*</string>
+    <string name="year_str">Выберите год выпуска автомобиля*</string>
+    <string name="current_mileage_input_str">Введите текущий пробег автомобиля*</string>
+    <string name="note_before_checkboxes">Выберите позиции за которыми вы желаете следить в вашем авто</string>
+    <string name="oil_checker_str">Моторное масло</string>
+    <string name="air_filt_checker_str">Воздушный фильтр</string>
+    <string name="freez_checker_str">Антифриз</string>
+    <string name="grm_checker_str">ГРМ</string>
+    <string name="save_creation_btn_str">Сохранить</string>
+    <string name="add_car_btn_str">Добавить автомобиль</string>
+    <string name="changing_hint_colors"><font size="54" color = "#FF0000">Выберите марку автомобиля</font></string>
+    <string name="last_service_mileage_dialog_hint_str">Пробег на момент последней замены</string>
+    <string name="service_interval_dialog_hint_str">Интервал замены</string>
+    <string name="current_mileage_check_box_dialog_str">Текущий пробег</string>
+    <string name="current_mileage_update_input_str">Введите обновлённый пробег автомобиля</string>
+    <string name="update_current_mileage_option_str">Обновить текущий пробег</string>
+    <string name="delete_car_option_str">Удалить автомобиль</string>
+    <string name="current_mileage_update_aller_dialog_str">Текущий пробег:\u0020</string>
+    <string name="updated_current_mileage_hint_update_aller_dialog_str">Введите пробег</string>
+    <string name="oil_icon_button">oil_bottomsheet_refresh_button</string>
+    <string name="air_filt_icon_button">air_filt_bottomsheet_refresh_button</string>
+    <string name="freez_icon_button">freez_bottomsheet_refresh_button</string>
+    <string name="grm_icon_button">grm_bottomsheet_refresh_button</string>
+    <string name="detail_icon">detail_car_image_view</string>
+    <string name="image_item">item_image_view</string>
+    <string name="detail_car_brand_model_name">detail_brand_model_name_text_view</string>
+    <string name="detail_car_year">detail_year_text_view</string>
+    <string name="detail_car_mileage">detail_mileage_text_view</string>
+    <string name="detail_service_mileage_headline_str">Интервалы замены:</string>
+    <string name="detail_bottomsheet_headline_str">Пробег до замены:</string>
+    <string name="successful_insert">Сохранение успешно</string>
+    <string name="unsuccessful_insert">Ошибка сохранения</string>
+</resources>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="hint_style_dialog" parent="TextAppearance.Design.Hint">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="My_style" parent="Widget.Material3.BottomSheet">
+
+        <item name="paddingBottomSystemWindowInsets">true</item>
+        <item name="paddingTopSystemWindowInsets">true</item>
+        <item name="paddingLeftSystemWindowInsets">false</item>
+        <item name="paddingRightSystemWindowInsets">false</item>
+
+    </style>
+    >
+
+    <style name="selectableTextView" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">20sp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:clickable">false</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="MyIconButtonStyle" parent="Widget.Material3.Button.IconButton">
+        <item name="iconSize">30dp</item>
+    </style>
+
+
+</resources>
