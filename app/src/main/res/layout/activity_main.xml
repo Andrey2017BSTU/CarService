@@ -11,14 +11,14 @@
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    tools:context=".MainActivity">
+    tools:context=".appModule.MainActivity">
+
 
 
     <FrameLayout
         android:id="@+id/fr"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
     </FrameLayout>
 

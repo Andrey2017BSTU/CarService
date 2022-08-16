@@ -1,4 +1,4 @@
-package com.example.carservice
+package com.example.carservice.carCreatingModule
 
 import android.os.Bundle
 import android.text.Editable
@@ -12,7 +12,12 @@ import android.widget.CheckBox
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.example.carservice.R
+import com.example.carservice.appModule.AddingState
+import com.example.carservice.appModule.ServiceType
+import com.example.carservice.dataBase.AppDataBase
 import com.example.carservice.databinding.CarCreatingBinding
+import com.example.carservice.pixabayAPI.RetrofitService
 
 
 class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterListener,
@@ -36,12 +41,13 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
         _binding = CarCreatingBinding.inflate(inflater, container, false)
 
 
+        sharedViewModel.init(AppDataBase.getDatabase(requireContext()), RetrofitService.invoke())
 
         sharedViewModel.brandNameMutableLiveData.observe(viewLifecycleOwner) {
 
             binding.brandAutCompTxtvw.setAdapter(
                 ArrayAdapter(
-                    context!!,
+                    requireContext(),
                     R.layout.drop_down_item,
                     it
                 )
@@ -54,11 +60,30 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
             binding.modelAutCompTxtvw.setAdapter(
                 ArrayAdapter(
-                    context!!,
+                    requireContext(),
                     R.layout.drop_down_item,
                     it
                 )
             )
+
+        }
+
+        sharedViewModel.stateMutableLiveData.observe(viewLifecycleOwner){
+            when(it) {
+
+                is AddingState.AnyViewEmpty -> Toast.makeText(context, "Заполните обязательные поля (*)", Toast.LENGTH_SHORT).show()
+                is AddingState.IncorrectCurrentMileage -> Toast.makeText(context, "Неверное значение текущего пробега", Toast.LENGTH_SHORT).show()
+                is AddingState.Success ->{
+                    Toast.makeText(context, R.string.successful_insert, Toast.LENGTH_LONG).show()
+                    val fragmentManager = parentFragmentManager
+                    // TODO: Найти решение по-лучше
+                    fragmentManager.popBackStack()
+                }
+                is AddingState.UnSuccess ->  Toast.makeText(context, R.string.unsuccessful_insert, Toast.LENGTH_LONG).show()
+
+
+            }
+
 
         }
 
@@ -83,7 +108,7 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
         binding.yearAutCompTxtvw.setAdapter(
             ArrayAdapter(
-                context!!,
+                requireContext(),
                 R.layout.drop_down_item,
                 sharedViewModel.getListOfYears()
             )
@@ -97,7 +122,8 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
 
         binding.saveButton.setOnClickListener {
-            addNewCar()
+            addNewCarToDataBase()
+
         }
 
         binding.currentMileageView.addTextChangedListener(object : TextWatcher {
@@ -126,45 +152,10 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
     }
 
 
-    // TODO: Перенести логигу во viewModel.addCar(), что бы метод возвращал события в фрагмент, а не некоретный ввод обрабатывлся здесь
-    private fun addNewCar() {
-        val carBrandName = binding.brandAutCompTxtvw.text.toString()
-        val carModelName = binding.modelAutCompTxtvw.text.toString()
-        val carYear = binding.yearAutCompTxtvw.text.toString()
-        val carCurrentMileage: Int
-        val isIncorrectCurrentMileage: Boolean =
-            binding.currentMileageView.text.toString() == "" || binding.currentMileageView.text.toString()
-                .toInt() == 0
-        val isAnyViewEmpty: Boolean =
-            carBrandName == "" || carModelName == "" || carYear == ""
+    // TODO: Перенести логигу во viewModel.addCar(), что бы метод возвращал события в фрагмент, а не некоретный ввод обрабатывлся здесь: Сделал, протестить
+    private fun addNewCarToDataBase() {
 
-        if (isAnyViewEmpty) {
-            Toast.makeText(context, "Заполните обязательные поля (*)", Toast.LENGTH_SHORT).show()
-
-        } else if (isIncorrectCurrentMileage) {
-
-            Toast.makeText(context, "Неверное значение текущего пробега", Toast.LENGTH_SHORT).show()
-
-
-        } else {
-            carCurrentMileage = binding.currentMileageView.text.toString().toInt()
-
-            val carEntity = CarsItemTable(
-                brand_name = carBrandName,
-                model_name = carModelName,
-                year = carYear,
-                current_mileage = carCurrentMileage,
-            )
-
-
-            if (sharedViewModel.addCar(carEntity) != -(1).toLong()) {
-                Toast.makeText(context, R.string.successful_insert, Toast.LENGTH_LONG).show()
-            } else {
-                Toast.makeText(context, R.string.unsuccessful_insert, Toast.LENGTH_LONG).show()
-            }
-
-
-        }
+        sharedViewModel.onCarAdding(binding.brandAutCompTxtvw.text.toString(),binding.modelAutCompTxtvw.text.toString(),binding.yearAutCompTxtvw.text.toString(),binding.currentMileageView.text.toString())
 
     }
 
@@ -211,8 +202,10 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
         val isIncorrectEnter: Boolean =
             service_interval == -1 || service_interval == 0 || last_service_mileage == -1 || !current_mileage_checker && last_service_mileage == 0
 
-        val isIncorrectCurrentMileage: Boolean = binding.currentMileageView.text.toString() == "" || binding.currentMileageView.text.toString().toInt() <= 0
-
+        val isIncorrectCurrentMileage: Boolean =
+            binding.currentMileageView.text.toString() == "" || binding.currentMileageView.text.toString()
+                .toInt() <= 0
+// TODO: Развернуть цепочку условий полиморфизмом
         if (isIncorrectEnter) {
             Toast.makeText(
                 context,
@@ -263,7 +256,7 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
     override fun onClick(p0: View?) {
         if (p0 is CheckBox) {
             val checked: Boolean = p0.isChecked
-
+// TODO: Развернуть цепочку условий полиморфизмом
             when (p0.id) {
                 R.id.oil_checkBox -> {
                     if (checked) {

@@ -1,4 +1,4 @@
-package com.example.carservice
+package com.example.carservice.appModule
 
 enum class ServiceType {
     OIL,

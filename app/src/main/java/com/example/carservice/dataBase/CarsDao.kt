@@ -1,4 +1,4 @@
-package com.example.carservice
+package com.example.carservice.dataBase
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -14,6 +14,17 @@ interface CarsDao {
     @Query("SELECT model_name FROM model_table WHERE brand_id = :mBrandId")
     fun getModelNameByBrandId(mBrandId: Int): Flow<List<String>>
 
+    @Query("SELECT * FROM cars_item_table")
+    fun getAllCars(): Flow<List<CarsItemTable>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addCar(item: CarsItemTable): Long
+
+
+    @Query("SELECT model_name FROM cars_item_table WHERE id = :carId")
+    fun getCarModelNameById(carId: Int): Flow<String>
+
+
+
+
 }

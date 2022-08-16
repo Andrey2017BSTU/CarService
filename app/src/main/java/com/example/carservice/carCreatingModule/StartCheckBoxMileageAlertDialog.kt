@@ -1,4 +1,4 @@
-package com.example.carservice
+package com.example.carservice.carCreatingModule
 
 import android.app.Dialog
 import android.content.Context
@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.CompoundButton
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import com.example.carservice.appModule.ServiceType
 import com.example.carservice.databinding.CheckBoxAlertDialogCustomLayoutBinding
 
 class StartCheckBoxMileageAlertDialog(private val serviceType: ServiceType) : DialogFragment() {

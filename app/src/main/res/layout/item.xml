@@ -7,35 +7,61 @@
     android:layout_margin="8dp"
     app:cardCornerRadius="8dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="20dp">
 
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="@+id/ImageViewCarItem"
+            app:layout_constraintStart_toStartOf="@+id/ImageViewCarItem"
+            app:layout_constraintEnd_toEndOf="@+id/ImageViewCarItem"
+            app:layout_constraintBottom_toBottomOf="@+id/ImageViewCarItem"
+
+
+            />
+
         <ImageView
             android:id="@+id/ImageViewCarItem"
             android:layout_width="match_parent"
             android:layout_height="200dp"
+            android:layout_marginBottom="32dp"
             android:contentDescription="@string/image_item"
-            android:src="@mipmap/ic_launcher" />
+            android:src="@mipmap/ic_launcher"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.6"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.131" />
 
         <TextView
             android:id="@+id/TextViewCarDescriptionItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
+            app:layout_constraintTop_toBottomOf="@id/ImageViewCarItem"
+            app:layout_constraintStart_toStartOf="parent"
             android:textColor="?attr/colorOnSurface"
             android:textAppearance="?attr/textAppearanceHeadlineMedium" />
 
         <TextView
-            android:id="@+id/TextViewYearItem"
+            android:id="@+id/TextViewCurrentMileageItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/TextViewCarDescriptionItem"
+            app:layout_constraintBottom_toBottomOf="parent"
 
+            app:layout_constraintStart_toStartOf="parent"
             android:textColor="?attr/colorOnSurface"
             android:textAppearance="?attr/textAppearanceHeadlineSmall"
         />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

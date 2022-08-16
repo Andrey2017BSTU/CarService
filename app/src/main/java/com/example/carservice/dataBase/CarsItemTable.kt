@@ -1,7 +1,8 @@
-package com.example.carservice
+package com.example.carservice.dataBase
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "cars_item_table")
@@ -33,4 +34,12 @@ data class CarsItemTable(
     @ColumnInfo(name = "grm_mileage")
     val grm_mileage: Int = 0
 
-)
+
+    )
+
+{
+    @Ignore
+    var image_url: String? = ""
+}
+
+

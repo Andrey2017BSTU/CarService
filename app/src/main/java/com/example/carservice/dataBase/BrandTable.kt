@@ -1,4 +1,4 @@
-package com.example.carservice
+package com.example.carservice.dataBase
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

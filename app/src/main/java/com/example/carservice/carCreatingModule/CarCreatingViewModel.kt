@@ -1,4 +1,4 @@
-package com.example.carservice
+package com.example.carservice.carCreatingModule
 
 import android.text.Editable
 import android.util.Log
@@ -7,12 +7,18 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.carservice.appModule.AddingState
+import com.example.carservice.appModule.AppRepository
+import com.example.carservice.appModule.ServiceType
+import com.example.carservice.dataBase.AppDataBase
+import com.example.carservice.dataBase.CarsItemTable
+import com.example.carservice.pixabayAPI.RetrofitService
 import kotlinx.coroutines.launch
 import java.util.*
 
 
 class CarCreatingViewModel : ViewModel() {
-    private lateinit var rep: AppRepository
+    private lateinit var appRepository: AppRepository
 
     class ServiceList(
         var lastServiceMileage: Int = 0,
@@ -23,6 +29,7 @@ class CarCreatingViewModel : ViewModel() {
 
     val brandNameMutableLiveData = MutableLiveData<List<String>>()
     val modelNameByBrandMutableLiveData = MutableLiveData<List<String>>()
+    val stateMutableLiveData = MutableLiveData<AddingState>()
 
 
     private var updatableCurrentMileage = 0
@@ -32,12 +39,12 @@ class CarCreatingViewModel : ViewModel() {
     private val grmServiceList = ServiceList()
 
 
-    fun init(dataBaseObj: AppDataBase) {
+    fun init(dataBaseObj: AppDataBase, _ret: RetrofitService) {
 
-        rep = AppRepository(dataBaseObj)
+        appRepository = AppRepository(dataBaseObj, _ret)
 
         viewModelScope.launch {
-            rep.getBrand().collect { item ->
+            appRepository.getBrandsOfCars().collect { item ->
                 brandNameMutableLiveData.postValue(item)
 
             }
@@ -58,7 +65,7 @@ class CarCreatingViewModel : ViewModel() {
 
     fun getModelNameByBrand(brand_id: Int) {
         viewModelScope.launch {
-            rep.getModelNameByBrandId(brand_id).collect { item ->
+            appRepository.getModelNameByBrandId(brand_id).collect { item ->
                 modelNameByBrandMutableLiveData.postValue(item)
 
             }
@@ -78,7 +85,64 @@ class CarCreatingViewModel : ViewModel() {
     }
 
 
-    fun addCar(carItem: CarsItemTable): Long {
+    private fun handleState(state: AddingState) {
+        viewModelScope.launch {
+
+            when (state) {
+                is AddingState.Success -> {
+
+                    val carEntity = CarsItemTable(
+                        brand_name = state.name,
+                        model_name = state.model,
+                        year = state.year,
+                        current_mileage = state.currentMileage.toInt(),
+                    )
+                    finalCarAdding(carEntity)
+                    stateMutableLiveData.postValue(
+                        AddingState.Success(
+                            state.name,
+                            state.model,
+                            state.year,
+                            state.currentMileage
+                        )
+                    )
+                }
+                AddingState.AnyViewEmpty -> stateMutableLiveData.postValue(AddingState.AnyViewEmpty)
+                AddingState.IncorrectCurrentMileage -> stateMutableLiveData.postValue(AddingState.IncorrectCurrentMileage)
+                AddingState.UnSuccess -> stateMutableLiveData.postValue(AddingState.UnSuccess)
+            }
+        }
+
+    }
+
+
+    fun onCarAdding(name: String, model: String, year: String, currentMileage: String) {
+        val isAnyViewEmpty: Boolean =
+            name == "" || model == "" || year == ""
+        val isIncorrectCurrentMileage: Boolean =
+            currentMileage == "" || currentMileage
+                .toInt() == 0
+
+        if (isAnyViewEmpty) {
+
+            handleState(AddingState.AnyViewEmpty)
+
+        } else if (isIncorrectCurrentMileage) {
+
+            handleState(AddingState.IncorrectCurrentMileage)
+
+        } else {
+
+
+            handleState(AddingState.Success(name, model, year, currentMileage))
+
+        }
+
+
+    }
+
+
+    private fun finalCarAdding(carItem: CarsItemTable): Long {
         var numberOfAddedRow: Long = 0
 
         viewModelScope.launch {
@@ -98,7 +162,7 @@ class CarCreatingViewModel : ViewModel() {
                 grm_mileage = grmServiceList.serviceInterval
             )
 
-            numberOfAddedRow = rep.addCar(carItemVm)
+            numberOfAddedRow = appRepository.addCarToDataBase(carItemVm)
 
         }
 
