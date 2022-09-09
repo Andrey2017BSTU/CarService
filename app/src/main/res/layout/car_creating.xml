@@ -9,20 +9,23 @@
 
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/brand_text_inpt"
+        android:id="@+id/brand_text_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/model_text_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <AutoCompleteTextView
-            android:id="@+id/brand_aut_comp_txtvw"
+            android:id="@+id/brand_aut_comp_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/brand_str"
@@ -33,7 +36,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/model_text_inpt"
+        android:id="@+id/model_text_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -42,13 +45,14 @@
         android:layout_marginStart="8dp"
 
         android:layout_marginTop="24dp"
+
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/brand_text_inpt">
+        app:layout_constraintTop_toBottomOf="@+id/brand_text_layout">
 
         <AutoCompleteTextView
-            android:id="@+id/model_aut_comp_txtvw"
+            android:id="@+id/model_aut_comp_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/model_str"
@@ -57,7 +61,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/year_text_inpt"
+        android:id="@+id/year_text_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -69,10 +73,10 @@
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/model_text_inpt">
+        app:layout_constraintTop_toBottomOf="@+id/model_text_layout">
 
         <AutoCompleteTextView
-            android:id="@+id/year_aut_comp_txtvw"
+            android:id="@+id/year_aut_comp_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/year_str"
@@ -81,7 +85,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <EditText
-        android:id="@+id/current_mileage_view"
+        android:id="@+id/current_mileage_edit_text"
         style="@android:style/Widget.Material.Light.EditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -97,7 +101,7 @@
         android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/year_text_inpt" />
+        app:layout_constraintTop_toBottomOf="@+id/year_text_layout" />
 
     <TextView
         android:id="@+id/textView2"
@@ -109,7 +113,7 @@
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/current_mileage_view" />
+        app:layout_constraintTop_toBottomOf="@+id/current_mileage_edit_text" />
 
     <CheckBox
         android:id="@+id/oil_checkBox"
@@ -170,8 +174,10 @@
         android:layout_marginStart="13dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="276dp"
+        android:layout_marginBottom="32dp"
         android:text="@string/grm_checker_str"
         android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/save_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -181,19 +187,17 @@
     <Button
         android:id="@+id/save_button"
         android:layout_width="0dp"
-        android:layout_height="64dp"
+        android:layout_height="58dp"
         android:layout_marginStart="16dp"
 
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
         android:text="@string/save_creation_btn_str"
         android:textSize="20sp"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/grm_checkBox" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

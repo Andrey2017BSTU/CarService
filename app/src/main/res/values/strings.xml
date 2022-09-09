@@ -11,7 +11,7 @@
     <string name="grm_checker_str">ГРМ</string>
     <string name="save_creation_btn_str">Сохранить</string>
     <string name="add_car_btn_str">Добавить автомобиль</string>
-    <string name="changing_hint_colors"><font size="54" color = "#FF0000">Выберите марку автомобиля</font></string>
+    <string name="changing_hint_colors"><font color="#FF0000" size="54">Выберите марку автомобиля</font></string>
     <string name="last_service_mileage_dialog_hint_str">Пробег на момент последней замены</string>
     <string name="service_interval_dialog_hint_str">Интервал замены</string>
     <string name="current_mileage_check_box_dialog_str">Текущий пробег</string>
@@ -33,4 +33,12 @@
     <string name="detail_bottomsheet_headline_str">Пробег до замены:</string>
     <string name="successful_insert">Сохранение успешно</string>
     <string name="unsuccessful_insert">Ошибка сохранения</string>
+    <string name="ok_rus_str_snack_bar">Хорошо</string>
+    <string name="ok_rus_str">ОК</string>
+    <string name="cancel_rus_str">Отмена</string>
+    <string name="incorrect_updated_current_mileage_snack_bar">Введите положительное значение обновленного пробега</string>
+    <string name="incorrect_current_mileage_str">Неверное значение текущего пробега</string>
+    <string name="fill_required_fields">Заполните обязательные поля (*)</string>
+    <string name="incorrect_enter">Неверное значение</string>
+    <string name="brand_not_chosen">Марка автомобиля не выбрана</string>
 </resources>

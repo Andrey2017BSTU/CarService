@@ -7,7 +7,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.carservice.appModule.AddingState
+import com.example.carservice.SingleLiveEvent
 import com.example.carservice.appModule.AppRepository
 import com.example.carservice.appModule.ServiceType
 import com.example.carservice.dataBase.AppDataBase
@@ -17,8 +17,8 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 
-class CarCreatingViewModel : ViewModel() {
-    private lateinit var appRepository: AppRepository
+class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel() {
+
 
     class ServiceList(
         var lastServiceMileage: Int = 0,
@@ -29,7 +29,10 @@ class CarCreatingViewModel : ViewModel() {
 
     val brandNameMutableLiveData = MutableLiveData<List<String>>()
     val modelNameByBrandMutableLiveData = MutableLiveData<List<String>>()
-    val stateMutableLiveData = MutableLiveData<AddingState>()
+
+    // val stateMutableLiveData = MutableLiveData<AddingState?>()
+    val addingStateMutableLiveData = SingleLiveEvent<AddingState>()
+    val checkBoxStateMutableLiveData = SingleLiveEvent<CheckBoxState>()
 
 
     private var updatableCurrentMileage = 0
@@ -51,6 +54,7 @@ class CarCreatingViewModel : ViewModel() {
 
         }
 
+        // stateMutableLiveData.value = null
 
     }
 
@@ -85,7 +89,7 @@ class CarCreatingViewModel : ViewModel() {
     }
 
 
-    private fun handleState(state: AddingState) {
+    private fun handleAddingState(state: AddingState) {
         viewModelScope.launch {
 
             when (state) {
@@ -98,7 +102,7 @@ class CarCreatingViewModel : ViewModel() {
                         current_mileage = state.currentMileage.toInt(),
                     )
                     finalCarAdding(carEntity)
-                    stateMutableLiveData.postValue(
+                    addingStateMutableLiveData.postValue(
                         AddingState.Success(
                             state.name,
                             state.model,
@@ -107,14 +111,100 @@ class CarCreatingViewModel : ViewModel() {
                         )
                     )
                 }
-                AddingState.AnyViewEmpty -> stateMutableLiveData.postValue(AddingState.AnyViewEmpty)
-                AddingState.IncorrectCurrentMileage -> stateMutableLiveData.postValue(AddingState.IncorrectCurrentMileage)
-                AddingState.UnSuccess -> stateMutableLiveData.postValue(AddingState.UnSuccess)
+                AddingState.AnyViewEmpty -> addingStateMutableLiveData.postValue(AddingState.AnyViewEmpty)
+                AddingState.IncorrectCurrentMileage -> addingStateMutableLiveData.postValue(
+                    AddingState.IncorrectCurrentMileage
+                )
+                AddingState.UnSuccess -> addingStateMutableLiveData.postValue(AddingState.UnSuccess)
             }
         }
 
     }
 
+    private fun handleCheckBoxState(state: CheckBoxState) {
+        viewModelScope.launch {
+            when (state) {
+                is CheckBoxState.IncorrectCurrentMileage -> checkBoxStateMutableLiveData.postValue(
+                    CheckBoxState.IncorrectCurrentMileage
+                )
+
+                is CheckBoxState.IncorrectEnter -> checkBoxStateMutableLiveData.postValue(
+                    CheckBoxState.IncorrectEnter
+                )
+                is CheckBoxState.SuccessCurrentMileageCheckBoxOn -> {
+                    finalCheckBoxPositiveClick(
+                        state.service_interval,
+                        state.last_service_mileage,
+                        state.current_mileage_checker,
+                        state.serviceType
+                    )
+                    checkBoxStateMutableLiveData.postValue(
+                    CheckBoxState.SuccessCurrentMileageCheckBoxOn(
+                        state.service_interval,
+                        state.last_service_mileage,
+                        state.current_mileage_checker,
+                        state.serviceType
+                    )
+                )}
+                is CheckBoxState.SuccessCurrentMileageCheckBoxOff -> {
+                    finalCheckBoxPositiveClick(
+                        state.service_interval,
+                        state.last_service_mileage,
+                        state.current_mileage_checker,
+                        state.serviceType
+                    )
+                    checkBoxStateMutableLiveData.postValue(
+                        CheckBoxState.SuccessCurrentMileageCheckBoxOff(
+                            state.service_interval,
+                            state.last_service_mileage,
+                            state.current_mileage_checker,
+                            state.serviceType
+                        )
+                    )}
+            }
+
+
+        }
+
+
+    }
+
+    private fun finalCheckBoxPositiveClick(service_interval: Int,
+                                           last_service_mileage: Int,
+                                           current_mileage_checker: Boolean,
+                                           serviceType: ServiceType) {
+        when (serviceType) {
+            ServiceType.OIL -> {
+                oilServiceList.serviceInterval = service_interval
+                oilServiceList.lastServiceMileage = last_service_mileage
+                oilServiceList.current_mileage_checker = current_mileage_checker
+
+
+            }
+            ServiceType.AIR_FILT -> {
+                airFiltServiceList.serviceInterval = service_interval
+                airFiltServiceList.lastServiceMileage = last_service_mileage
+                airFiltServiceList.current_mileage_checker = current_mileage_checker
+
+
+            }
+            ServiceType.FREEZ -> {
+                freezServiceList.serviceInterval = service_interval
+                freezServiceList.lastServiceMileage = last_service_mileage
+                freezServiceList.current_mileage_checker = current_mileage_checker
+
+
+            }
+            ServiceType.GRM -> {
+                grmServiceList.serviceInterval = service_interval
+                grmServiceList.lastServiceMileage = last_service_mileage
+                grmServiceList.current_mileage_checker = current_mileage_checker
+
+
+            }
+
+        }
+    }
 
     fun onCarAdding(name: String, model: String, year: String, currentMileage: String) {
         val isAnyViewEmpty: Boolean =
@@ -125,16 +215,16 @@ class CarCreatingViewModel : ViewModel() {
 
         if (isAnyViewEmpty) {
 
-            handleState(AddingState.AnyViewEmpty)
+            handleAddingState(AddingState.AnyViewEmpty)
 
         } else if (isIncorrectCurrentMileage) {
 
-            handleState(AddingState.IncorrectCurrentMileage)
+            handleAddingState(AddingState.IncorrectCurrentMileage)
 
         } else {
 
 
-            handleState(AddingState.Success(name, model, year, currentMileage))
+            handleAddingState(AddingState.Success(name, model, year, currentMileage))
 
         }
 
@@ -225,47 +315,53 @@ class CarCreatingViewModel : ViewModel() {
 
     }
 
-    //TODO: БАГ: Если снять галочку перед сохранением, пробег до замены не обнуляется. upd: Исправленно, протестить
-    //TODO: БАГ: Если изменить пробег после галочки но перед сохранением, последний пробег остаётся. upd: upd: Исправленно, протестить
+
     fun onPositiveButtonClickedCheckBox(
         service_interval: Int,
         last_service_mileage: Int,
         current_mileage_checker: Boolean,
+        currentMileageTextView: Editable,
         serviceType: ServiceType
     ) {
 
 
-        when (serviceType) {
-            ServiceType.OIL -> {
-                oilServiceList.serviceInterval = service_interval
-                oilServiceList.lastServiceMileage = last_service_mileage
-                oilServiceList.current_mileage_checker = current_mileage_checker
+        val isIncorrectEnter: Boolean =
+            service_interval == -1 || service_interval == 0 || last_service_mileage == -1 || !current_mileage_checker && last_service_mileage == 0
+
+        val isIncorrectCurrentMileage: Boolean =
+            currentMileageTextView.toString() == "" || currentMileageTextView.toString()
+                .toInt() <= 0
+// TODO: Развернуть цепочку условий полиморфизмом
+        if (isIncorrectEnter) {
+
+            handleCheckBoxState(CheckBoxState.IncorrectEnter)
 
 
-            }
-            ServiceType.AIR_FILT -> {
-                airFiltServiceList.serviceInterval = service_interval
-                airFiltServiceList.lastServiceMileage = last_service_mileage
-                airFiltServiceList.current_mileage_checker = current_mileage_checker
 
+        } else if (current_mileage_checker && isIncorrectCurrentMileage) {
 
-            }
-            ServiceType.FREEZ -> {
-                freezServiceList.serviceInterval = service_interval
-                freezServiceList.lastServiceMileage = last_service_mileage
-                freezServiceList.current_mileage_checker = current_mileage_checker
+            handleCheckBoxState(CheckBoxState.IncorrectCurrentMileage)
 
-
-            }
-            ServiceType.GRM -> {
-                grmServiceList.serviceInterval = service_interval
-                grmServiceList.lastServiceMileage = last_service_mileage
-                grmServiceList.current_mileage_checker = current_mileage_checker
-
-
-            }
 
         }
+       else if (current_mileage_checker) {
+
+            handleCheckBoxState(CheckBoxState.SuccessCurrentMileageCheckBoxOn(service_interval,
+                currentMileageTextView.toString().toInt(),
+                current_mileage_checker,
+                serviceType))
+
+        }
+        else {
+
+            handleCheckBoxState(CheckBoxState.SuccessCurrentMileageCheckBoxOff(service_interval,
+                last_service_mileage,
+                current_mileage_checker,
+                serviceType))
+
+        }
+
+
 
         Log.i(
             "PositiveVM",

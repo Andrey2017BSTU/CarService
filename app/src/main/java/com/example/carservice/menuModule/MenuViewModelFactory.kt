@@ -1,20 +1,22 @@
-package com.example.carservice.appModule
+package com.example.carservice.menuModule
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.carservice.menuModule.MenuViewModel
+import com.example.carservice.appModule.AppRepository
 
-class MainViewModelFactory(private val appRepository: AppRepository) : ViewModelProvider.Factory {
+class MenuViewModelFactory(private val appRepository: AppRepository) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return if (modelClass.isAssignableFrom(MenuViewModel::class.java)) {
-            Log.v("fac", "vm created")
+            Log.v("Menu_factory", "Menu vm created")
             MenuViewModel(this.appRepository) as T
 
         } else {
             throw IllegalArgumentException("ViewModel Not Found")
         }
+
+
     }
 
 }

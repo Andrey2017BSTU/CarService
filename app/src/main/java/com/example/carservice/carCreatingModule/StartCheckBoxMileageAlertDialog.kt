@@ -3,17 +3,22 @@ package com.example.carservice.carCreatingModule
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.CompoundButton
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import com.example.carservice.R
 import com.example.carservice.appModule.ServiceType
 import com.example.carservice.databinding.CheckBoxAlertDialogCustomLayoutBinding
+import com.google.android.material.textfield.TextInputLayout
 
 class StartCheckBoxMileageAlertDialog(private val serviceType: ServiceType) : DialogFragment() {
 
+    private var _binding: CheckBoxAlertDialogCustomLayoutBinding? = null
+    private val binding get() = _binding!!
 
     interface OnEnterListener {
         fun onPositiveButtonClicked(
@@ -42,82 +47,133 @@ class StartCheckBoxMileageAlertDialog(private val serviceType: ServiceType) : Di
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return activity?.let {
 
-
-            val binding =
-                CheckBoxAlertDialogCustomLayoutBinding.inflate(LayoutInflater.from(context))
-            val builder = AlertDialog.Builder(it)
+        _binding = CheckBoxAlertDialogCustomLayoutBinding.inflate(layoutInflater)
+        val builder = AlertDialog.Builder(binding.root.context)
 
 
 
+        binding.serviceIntervalEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                setErrorEnterOnLayout(binding.serviceIntervalTextLayout, s)
+            }
 
 
-            binding.currentMileageCheckbox.setOnCheckedChangeListener { _: CompoundButton?, b: Boolean ->
-                if (b) {
-                    binding.lastServiceMileageTextView.visibility = View.GONE
+        })
+
+        binding.lastServiceMileageEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+                setErrorEnterOnLayout(binding.lastServiceMileageTextLayout, s)
+
+            }
+        })
+
+
+
+
+        binding.currentMileageCheckbox.setOnCheckedChangeListener { _: CompoundButton?, b: Boolean ->
+            if (b) {
+                binding.lastServiceMileageTextLayout.visibility = View.GONE
+            } else {
+                binding.lastServiceMileageTextLayout.visibility = View.VISIBLE
+            }
+        }
+
+
+        when (serviceType) {
+            ServiceType.OIL -> builder.setTitle("Моторное масло")
+            ServiceType.AIR_FILT -> builder.setTitle("Воздушный фильтр")
+            ServiceType.FREEZ -> builder.setTitle("Антифриз")
+            ServiceType.GRM -> builder.setTitle("ГРМ")
+        }
+
+
+
+        builder.setView(binding.root)
+        builder.setPositiveButton(R.string.ok_rus_str) { _, _ ->
+
+            val serviceInterval =
+                binding.serviceIntervalEditText.text.toString()
+            val lastServiceMileage =
+                binding.lastServiceMileageEditText.text.toString()
+
+            val isEmptyEnter: Boolean =
+                serviceInterval == "" || !binding.currentMileageCheckbox.isChecked && lastServiceMileage == ""
+
+            if (isEmptyEnter) {
+
+                mListener.onPositiveButtonClicked(-1, -1, false)
+
+            } else {
+                if (!binding.currentMileageCheckbox.isChecked) {
+                    mListener.onPositiveButtonClicked(
+                        binding.serviceIntervalEditText.text.toString().toInt(),
+                        binding.lastServiceMileageEditText.text.toString().toInt(),
+                        false
+                    )
+
                 } else {
-                    binding.lastServiceMileageTextView.visibility = View.VISIBLE
+                    mListener.onPositiveButtonClicked(
+                        binding.serviceIntervalEditText.text.toString().toInt(),
+                        0,
+                        true
+                    )
                 }
             }
+        }
 
 
-            when (serviceType) {
-                ServiceType.OIL -> builder.setTitle("Моторное масло")
-                ServiceType.AIR_FILT -> builder.setTitle("Воздушный фильтр")
-                ServiceType.FREEZ -> builder.setTitle("Антифриз")
-                ServiceType.GRM -> builder.setTitle("ГРМ")
+            .setNeutralButton(R.string.cancel_rus_str) { dialogInterface, _ ->
+                Log.i("NeutralCB", "Click")
+                dialogInterface.dismiss()
+                mListener.onNeutralButtonClicked()
+
+
             }
 
+        isCancelable = false
+        return builder.create()
+    }
+
+    private fun setErrorEnterOnLayout(editText: TextInputLayout, s: Editable?) {
 
 
-            builder.setView(binding.root)
-            builder.setPositiveButton("OK") { _, _ ->
+        if (s != null) {
 
-                val serviceInterval =
-                    binding.serviceIntervalEditText.text.toString()
-                val lastServiceMileage =
-                    binding.lastServiceMileageEditText.text.toString()
+            if (s.startsWith("0") || s.startsWith("-")) {
 
-                val isEmptyEnter: Boolean =
-                    serviceInterval == "" || !binding.currentMileageCheckbox.isChecked && lastServiceMileage == ""
+                editText.error = getString(R.string.incorrect_enter)
 
-                if (isEmptyEnter) {
-
-                    mListener.onPositiveButtonClicked(-1, -1, false)
-
-                } else {
-                    if (!binding.currentMileageCheckbox.isChecked) {
-                        mListener.onPositiveButtonClicked(
-                            binding.serviceIntervalEditText.text.toString().toInt(),
-                            binding.lastServiceMileageEditText.text.toString().toInt(),
-                            false
-                        )
-
-                    } else {
-                        mListener.onPositiveButtonClicked(
-                            binding.serviceIntervalEditText.text.toString().toInt(),
-                            0,
-                            true
-                        )
-                    }
-                }
+            } else {
+                editText.error = null
             }
+        }
 
 
-                .setNeutralButton("Отмена") { dialogInterface, _ ->
-                    Log.i("NeutralCB", "Click")
-                    dialogInterface.dismiss()
-                    mListener.onNeutralButtonClicked()
-
-
-                }
-
-            isCancelable = false
-            builder.create()
-        } ?: throw IllegalStateException("Activity cannot be null")
     }
 
 

@@ -15,10 +15,16 @@ import com.example.carservice.R
 import com.example.carservice.dataBase.CarsItemTable
 import com.example.carservice.databinding.ItemBinding
 
-class AdapterEx : RecyclerView.Adapter<ViewHolderEX>() {
+class AdapterEx(private val itemClickListener: OnItemClickListener) : RecyclerView.Adapter<AdapterEx.ViewHolderEX>() {
 
 
     private var carsList = mutableListOf<CarsItemTable>()
+
+    interface OnItemClickListener{
+        fun onItemClicked(carItem: CarsItemTable)
+    }
+
+
 
 
     fun setCarsListAdapter(_cars: List<CarsItemTable>) {
@@ -54,7 +60,7 @@ class AdapterEx : RecyclerView.Adapter<ViewHolderEX>() {
 
         if (carItem.image_url.isNullOrEmpty()) {
 
-            setDefaultImageIntoViewByName(holder,carItem.brand_name)
+            setDefaultImageIntoViewByName(holder, carItem.brand_name)
 
         } else {
 
@@ -62,12 +68,11 @@ class AdapterEx : RecyclerView.Adapter<ViewHolderEX>() {
 
         }
 
-
+        holder.bind(carItem,itemClickListener)
     }
 
 
-
-    private fun setDefaultImageIntoViewByName(holder: ViewHolderEX, brandName: String){
+    private fun setDefaultImageIntoViewByName(holder: ViewHolderEX, brandName: String) {
         when (brandName) {
             "BMW" -> holder.binding.ImageViewCarItem.setImageResource(R.drawable.bmw_logo_2020_grey)
             "MERCEDES-BENZ" -> holder.binding.ImageViewCarItem.setImageResource(R.drawable.mercedes_logo)
@@ -75,9 +80,6 @@ class AdapterEx : RecyclerView.Adapter<ViewHolderEX>() {
             "VOLKSWAGEN" -> holder.binding.ImageViewCarItem.setImageResource(R.drawable.volkswagen_logo)
         }
     }
-
-
-
 
 
     private fun setImageIntoViewByUrl(holder: ViewHolderEX, url: String?) {
@@ -113,6 +115,7 @@ class AdapterEx : RecyclerView.Adapter<ViewHolderEX>() {
 
             }).into(holder.binding.ImageViewCarItem)
 
+
     }
 
 
@@ -121,8 +124,31 @@ class AdapterEx : RecyclerView.Adapter<ViewHolderEX>() {
     }
 
 
+
+    class ViewHolderEX(val binding: ItemBinding) : RecyclerView.ViewHolder(binding.root) {
+
+
+//        init {
+//
+//            binding.root.setOnClickListener(View.OnClickListener {
+//                val position = adapterPosition
+//                Toast.makeText(binding.root.context, position.toString()  , Toast.LENGTH_SHORT).show()
+//
+//            })
+//        }
+
+
+        fun bind(carItem: CarsItemTable, clickListener: OnItemClickListener){
+
+            binding.root.setOnClickListener {
+                clickListener.onItemClicked(carItem)
+            }
+
+
+
+
+        }
+
+    }
 }
 
-class ViewHolderEX(val binding: ItemBinding) : RecyclerView.ViewHolder(binding.root) {
-
-}

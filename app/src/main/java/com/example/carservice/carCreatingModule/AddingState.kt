@@ -1,4 +1,4 @@
-package com.example.carservice.appModule
+package com.example.carservice.carCreatingModule
 
 sealed class AddingState {
     object UnSuccess : AddingState()

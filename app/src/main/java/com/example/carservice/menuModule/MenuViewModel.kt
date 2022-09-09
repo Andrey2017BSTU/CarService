@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carservice.appModule.AppRepository
+import com.example.carservice.appModule.JsonResponseModel
 import com.example.carservice.dataBase.CarsItemTable
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -31,19 +32,19 @@ class MenuViewModel(private var appRepository: AppRepository) : ViewModel() {
                     val brandModelNamesQuery = item[n].brand_name + "+" + item[n].model_name
 
                     appRepository.getUriByQuery(brandModelNamesQuery)
-                        .enqueue(object : Callback<JsonCl> {
+                        .enqueue(object : Callback<JsonResponseModel> {
                             override fun onResponse(
-                                call: Call<JsonCl>,
-                                response: Response<JsonCl>
+                                call: Call<JsonResponseModel>,
+                                response: Response<JsonResponseModel>
                             ) {
 
-                                item[n].image_url = getUrlFromResponse(response)
+                                item[n].image_url = getUrlFromResponse(response)!!
                                 recyclerListLiveData.postValue(item)
-
                             }
 
-                            override fun onFailure(call: Call<JsonCl>, t: Throwable) {
 
+                            override fun onFailure(call: Call<JsonResponseModel>, t: Throwable) {
+                                Log.v("VM_Menu", "Failure Response")
                             }
                         })
 
@@ -55,7 +56,9 @@ class MenuViewModel(private var appRepository: AppRepository) : ViewModel() {
     }
 
 
-    fun getUrlFromResponse(responseBody: Response<JsonCl>?) = if (responseBody!!.body()!!.total != 0) responseBody.body()?.hits?.get(0)?.webformatURL else ""
+    fun getUrlFromResponse(responseBody: Response<JsonResponseModel>) = if (responseBody.body() != null && responseBody.body()!!.total != 0) {
+        responseBody.body()?.hits?.get(0)?.webformatURL
+    } else ""
 
 
     override fun onCleared() {

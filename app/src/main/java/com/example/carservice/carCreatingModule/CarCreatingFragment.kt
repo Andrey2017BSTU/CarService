@@ -9,22 +9,34 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.CheckBox
-import android.widget.Toast
+import android.widget.EditText
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.example.carservice.R
-import com.example.carservice.appModule.AddingState
+import com.example.carservice.appModule.AppRepository
 import com.example.carservice.appModule.ServiceType
 import com.example.carservice.dataBase.AppDataBase
 import com.example.carservice.databinding.CarCreatingBinding
 import com.example.carservice.pixabayAPI.RetrofitService
+import com.google.android.material.snackbar.Snackbar
 
 
 class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterListener,
     View.OnClickListener {
 
 
-    private val sharedViewModel: CarCreatingViewModel by activityViewModels()
+    private val viewModelObj: CarCreatingViewModel by viewModels {
+        CarCreatingViewModelFactory(
+            AppRepository(
+                AppDataBase.getDatabase(requireContext()),
+                RetrofitService.invoke()
+
+            )
+
+        )
+
+
+    }
 
     private var _binding: CarCreatingBinding? = null
     private val binding get() = _binding!!
@@ -41,11 +53,11 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
         _binding = CarCreatingBinding.inflate(inflater, container, false)
 
 
-        sharedViewModel.init(AppDataBase.getDatabase(requireContext()), RetrofitService.invoke())
+        viewModelObj.init(AppDataBase.getDatabase(requireContext()), RetrofitService.invoke())
 
-        sharedViewModel.brandNameMutableLiveData.observe(viewLifecycleOwner) {
+        viewModelObj.brandNameMutableLiveData.observe(viewLifecycleOwner) {
 
-            binding.brandAutCompTxtvw.setAdapter(
+            binding.brandAutCompTextView.setAdapter(
                 ArrayAdapter(
                     requireContext(),
                     R.layout.drop_down_item,
@@ -56,9 +68,9 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
         }
 
 
-        sharedViewModel.modelNameByBrandMutableLiveData.observe(viewLifecycleOwner) {
+        viewModelObj.modelNameByBrandMutableLiveData.observe(viewLifecycleOwner) {
 
-            binding.modelAutCompTxtvw.setAdapter(
+            binding.modelAutCompTextView.setAdapter(
                 ArrayAdapter(
                     requireContext(),
                     R.layout.drop_down_item,
@@ -68,18 +80,112 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
         }
 
-        sharedViewModel.stateMutableLiveData.observe(viewLifecycleOwner){
-            when(it) {
+        // TODO: Протестить варианты
+        viewModelObj.checkBoxStateMutableLiveData.observe(viewLifecycleOwner) {
+            when (it) {
+                is CheckBoxState.IncorrectEnter -> {
+                    Snackbar.make(
+                        binding.root,
+                        "Поля должны быть заполнены положительными значениями",
+                        Snackbar.LENGTH_INDEFINITE
+                    ).setAction(R.string.ok_rus_str_snack_bar) { item ->
 
-                is AddingState.AnyViewEmpty -> Toast.makeText(context, "Заполните обязательные поля (*)", Toast.LENGTH_SHORT).show()
-                is AddingState.IncorrectCurrentMileage -> Toast.makeText(context, "Неверное значение текущего пробега", Toast.LENGTH_SHORT).show()
-                is AddingState.Success ->{
-                    Toast.makeText(context, R.string.successful_insert, Toast.LENGTH_LONG).show()
-                    val fragmentManager = parentFragmentManager
-                    // TODO: Найти решение по-лучше
-                    fragmentManager.popBackStack()
+                        item.visibility = View.GONE
+
+                    }.show()
+                    checkboxOffById(serviceTypeIs)
                 }
-                is AddingState.UnSuccess ->  Toast.makeText(context, R.string.unsuccessful_insert, Toast.LENGTH_LONG).show()
+                is CheckBoxState.IncorrectCurrentMileage -> {
+                    Snackbar.make(
+                        binding.root,
+                        R.string.incorrect_current_mileage_str,
+                        Snackbar.LENGTH_INDEFINITE
+                    ).setAction(R.string.ok_rus_str_snack_bar) { item ->
+
+                        item.visibility = View.GONE
+
+                    }.show()
+                    checkboxOffById(serviceTypeIs)
+
+
+                }
+                is CheckBoxState.SuccessCurrentMileageCheckBoxOff -> Log.v(
+                    "Car_creating_frag",
+                    "SuccessCurrentMileageCheckBoxOff"
+                )
+                is CheckBoxState.SuccessCurrentMileageCheckBoxOn -> Log.v(
+                    "Car_creating_frag",
+                    "SuccessCurrentMileageCheckBoxOn"
+                )
+            }
+
+
+        }
+
+
+        binding.modelAutCompTextView.setOnClickListener {
+            if (binding.modelAutCompTextView.adapter == null) {
+                binding.brandTextLayout.error = getString(R.string.brand_not_chosen)
+            } else {
+                binding.brandTextLayout.error = null
+            }
+
+
+        }
+
+
+        binding.brandAutCompTextView.setOnItemClickListener { _, _, position, _ ->
+
+            binding.modelAutCompTextView.setText("")
+            binding.brandTextLayout.error = null
+            viewModelObj.getModelNameByBrand(position + 1)
+
+
+        }
+
+
+        viewModelObj.addingStateMutableLiveData.observe(viewLifecycleOwner) {
+            when (it) {
+
+                is AddingState.AnyViewEmpty -> Snackbar.make(
+                    binding.root,
+                    R.string.fill_required_fields,
+                    Snackbar.LENGTH_INDEFINITE
+                ).setAction(R.string.ok_rus_str_snack_bar) { item ->
+
+                    item.visibility = View.GONE
+
+                }.show()
+
+                is AddingState.IncorrectCurrentMileage -> Snackbar.make(
+                    binding.root,
+                    R.string.incorrect_current_mileage_str,
+                    Snackbar.LENGTH_INDEFINITE
+                ).setAction(R.string.ok_rus_str_snack_bar) { item ->
+
+                    item.visibility = View.GONE
+
+                }.show()
+
+                is AddingState.Success -> {
+                    Snackbar.make(binding.root, R.string.successful_insert, Snackbar.LENGTH_LONG)
+                        .show()
+
+// TODO: Найти решение по-лучше
+                    val fragmentManager = parentFragmentManager
+                    fragmentManager.popBackStack()
+
+
+                }
+                is AddingState.UnSuccess -> Snackbar.make(
+                    binding.root,
+                    R.string.unsuccessful_insert,
+                    Snackbar.LENGTH_INDEFINITE
+                ).setAction(R.string.ok_rus_str_snack_bar) { item ->
+
+                    item.visibility = View.GONE
+
+                }.show()
 
 
             }
@@ -87,30 +193,20 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
         }
 
-        binding.brandAutCompTxtvw.setOnItemClickListener { _, _, position, _ ->
 
-            binding.modelAutCompTxtvw.setText("")
-
-            sharedViewModel.getModelNameByBrand(position + 1)
-
-
-        }
-
-
-
-        binding.currentMileageView.setOnFocusChangeListener { _, hasFocus ->
+        binding.currentMileageEditText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus)
-                binding.currentMileageView.hint = ""
+                binding.currentMileageEditText.hint = ""
             else
-                binding.currentMileageView.hint = getString(R.string.current_mileage_input_str)
+                binding.currentMileageEditText.hint = getString(R.string.current_mileage_input_str)
 
         }
 
-        binding.yearAutCompTxtvw.setAdapter(
+        binding.yearAutCompTextView.setAdapter(
             ArrayAdapter(
                 requireContext(),
                 R.layout.drop_down_item,
-                sharedViewModel.getListOfYears()
+                viewModelObj.getListOfYears()
             )
         )
 
@@ -126,11 +222,12 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
         }
 
-        binding.currentMileageView.addTextChangedListener(object : TextWatcher {
+        binding.currentMileageEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 if (s.toString() != "") {
                     onCurrentMileageChanged(s)
                 }
+                setErrorEnterOnLayout(binding.currentMileageEditText, s)
 
             }
 
@@ -146,16 +243,36 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
         return binding.root
     }
 
+    private fun setErrorEnterOnLayout(editText: EditText, s: Editable?) {
+
+
+        if (s != null) {
+
+            if (s.startsWith("0") || s.startsWith("-")) {
+
+                editText.error = getString(R.string.incorrect_enter)
+
+            } else {
+                editText.error = null
+            }
+        }
+
+
+    }
 
     private fun onCurrentMileageChanged(s: Editable?) {
-        sharedViewModel.onCurrentMileageChanged(s)
+        viewModelObj.onCurrentMileageChanged(s)
     }
 
 
-    // TODO: Перенести логигу во viewModel.addCar(), что бы метод возвращал события в фрагмент, а не некоретный ввод обрабатывлся здесь: Сделал, протестить
-    private fun addNewCarToDataBase() {
 
-        sharedViewModel.onCarAdding(binding.brandAutCompTxtvw.text.toString(),binding.modelAutCompTxtvw.text.toString(),binding.yearAutCompTxtvw.text.toString(),binding.currentMileageView.text.toString())
+    private fun addNewCarToDataBase() {
+        viewModelObj.onCarAdding(
+            binding.brandAutCompTextView.text.toString(),
+            binding.modelAutCompTextView.text.toString(),
+            binding.yearAutCompTextView.text.toString(),
+            binding.currentMileageEditText.text.toString()
+        )
 
     }
 
@@ -164,23 +281,23 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
         when (serviceType) {
             ServiceType.OIL -> {
                 binding.oilCheckBox.isChecked = false
-                sharedViewModel.onCheckBoxOff(ServiceType.OIL)
+                viewModelObj.onCheckBoxOff(ServiceType.OIL)
 
 
             }
             ServiceType.AIR_FILT -> {
                 binding.airFiltCheckBox.isChecked = false
-                sharedViewModel.onCheckBoxOff(ServiceType.AIR_FILT)
+                viewModelObj.onCheckBoxOff(ServiceType.AIR_FILT)
 
             }
             ServiceType.FREEZ -> {
                 binding.freezCheckBox.isChecked = false
-                sharedViewModel.onCheckBoxOff(ServiceType.FREEZ)
+                viewModelObj.onCheckBoxOff(ServiceType.FREEZ)
 
             }
             ServiceType.GRM -> {
                 binding.grmCheckBox.isChecked = false
-                sharedViewModel.onCheckBoxOff(ServiceType.GRM)
+                viewModelObj.onCheckBoxOff(ServiceType.GRM)
 
             }
 
@@ -199,57 +316,23 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
         last_service_mileage: Int,
         current_mileage_checker: Boolean
     ) {
-        val isIncorrectEnter: Boolean =
-            service_interval == -1 || service_interval == 0 || last_service_mileage == -1 || !current_mileage_checker && last_service_mileage == 0
 
-        val isIncorrectCurrentMileage: Boolean =
-            binding.currentMileageView.text.toString() == "" || binding.currentMileageView.text.toString()
-                .toInt() <= 0
-// TODO: Развернуть цепочку условий полиморфизмом
-        if (isIncorrectEnter) {
-            Toast.makeText(
-                context,
-                "Введите положительные значения полей",
-                Toast.LENGTH_SHORT
-            ).show()
-            checkboxOffById(serviceTypeIs)
+        viewModelObj.onPositiveButtonClickedCheckBox(
+            service_interval,
+            last_service_mileage,
+            current_mileage_checker,
+            binding.currentMileageEditText.text,
+            serviceTypeIs
+        )
 
-
-        } else if (current_mileage_checker && isIncorrectCurrentMileage) {
-            Toast.makeText(
-                context,
-                "Введено неверное значение текущего пробега",
-                Toast.LENGTH_SHORT
-            ).show()
-            checkboxOffById(serviceTypeIs)
-
-        } else if (current_mileage_checker) {
-            sharedViewModel.onPositiveButtonClickedCheckBox(
-                service_interval,
-                Integer.parseInt(binding.currentMileageView.text.toString()),
-                current_mileage_checker,
-                serviceTypeIs
-            )
-
-
-        } else {
-            sharedViewModel.onPositiveButtonClickedCheckBox(
-                service_interval,
-                last_service_mileage,
-                current_mileage_checker,
-                serviceTypeIs
-            )
-
-        }
-
-        Log.i("PositiveFragment", service_interval.toString())
     }
+
 
     override fun onNeutralButtonClicked() {
 
         checkboxOffById(serviceTypeIs)
 
-        sharedViewModel.onNeutralButtonClickedCheckBox(serviceTypeIs)
+        viewModelObj.onNeutralButtonClickedCheckBox(serviceTypeIs)
     }
 
 
@@ -260,16 +343,16 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
             when (p0.id) {
                 R.id.oil_checkBox -> {
                     if (checked) {
-                        sharedViewModel.startAlertDialog(parentFragmentManager, ServiceType.OIL)
+                        viewModelObj.startAlertDialog(parentFragmentManager, ServiceType.OIL)
                         serviceTypeIs = ServiceType.OIL
                     } else {
-                        // TODO: Придумать что нибудь с "хард" переменными.  upd: Исправленно, протестить
+
                         checkboxOffById(ServiceType.OIL)
                     }
                 }
                 R.id.air_filt_checkBox -> {
                     if (checked) {
-                        sharedViewModel.startAlertDialog(
+                        viewModelObj.startAlertDialog(
                             parentFragmentManager,
                             ServiceType.AIR_FILT
                         )
@@ -280,7 +363,7 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
                 }
                 R.id.freez_checkBox -> {
                     if (checked) {
-                        sharedViewModel.startAlertDialog(parentFragmentManager, ServiceType.FREEZ)
+                        viewModelObj.startAlertDialog(parentFragmentManager, ServiceType.FREEZ)
                         serviceTypeIs = ServiceType.FREEZ
                     } else {
                         checkboxOffById(ServiceType.FREEZ)
@@ -291,7 +374,7 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
                 R.id.grm_checkBox -> {
                     if (checked) {
-                        sharedViewModel.startAlertDialog(parentFragmentManager, ServiceType.GRM)
+                        viewModelObj.startAlertDialog(parentFragmentManager, ServiceType.GRM)
                         serviceTypeIs = ServiceType.GRM
                     } else {
                         checkboxOffById(ServiceType.GRM)

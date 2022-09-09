@@ -20,11 +20,17 @@ interface CarsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addCar(item: CarsItemTable): Long
 
+    @Query("SELECT * FROM cars_item_table WHERE id = (:mCarId)")
+    fun getCarById(mCarId: Int): Flow<CarsItemTable>
 
-    @Query("SELECT model_name FROM cars_item_table WHERE id = :carId")
-    fun getCarModelNameById(carId: Int): Flow<String>
+    @Query("DELETE FROM cars_item_table WHERE ID =(:mCarId)")
+    suspend fun deleteCarById(mCarId: Int)
 
+    @Query("SELECT current_mileage FROM cars_item_table WHERE id = (:mCarId)")
+    fun getCurrentMileageById(mCarId: Int): Flow<Int>
 
+    @Query("UPDATE cars_item_table SET current_mileage = (:mUpdatedCurrentMileage) WHERE id =(:mCarId)")
+    suspend fun updateCurrentMileageById(mCarId: Int, mUpdatedCurrentMileage: Int)
 
 
 }

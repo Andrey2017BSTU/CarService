@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item
+        android:id="@+id/update_current_mileage_option"
+        android:title="@string/update_current_mileage_option_str" />
+    <item
+        android:id="@+id/delete_car_option"
+        android:title="@string/delete_car_option_str" />
+
+
+</menu>

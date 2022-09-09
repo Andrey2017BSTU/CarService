@@ -1,21 +1,19 @@
+@file:Suppress("SpellCheckingInspection")
+
 package com.example.carservice.pixabayAPI
 
-import com.example.carservice.menuModule.JsonCl
+import com.example.carservice.appModule.JsonResponseModel
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
-import retrofit2.http.QueryMap
 
 
 interface RetrofitService {
 
-    @GET("/api/")
-    fun getImageUri(@QueryMap parameter: Map<String, String>): Call<JsonCl>
-
     @GET("/api/?key=14324202-2291f6c2aacfd3768d6f3ed60")
-    fun getImageUriByQ(@Query("q") query: String ):Call<JsonCl>
+    fun getImageUriByQ(@Query("q") query: String): Call<JsonResponseModel>
 
     companion object {
 

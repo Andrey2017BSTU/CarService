@@ -1,4 +1,4 @@
-package com.example.carservice.menuModule
+package com.example.carservice.appModule
 
 data class Hit(
     val collections: Int,
