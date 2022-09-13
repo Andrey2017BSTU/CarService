@@ -30,7 +30,7 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
     val brandNameMutableLiveData = MutableLiveData<List<String>>()
     val modelNameByBrandMutableLiveData = MutableLiveData<List<String>>()
 
-    // val stateMutableLiveData = MutableLiveData<AddingState?>()
+
     val addingStateMutableLiveData = SingleLiveEvent<AddingState>()
     val checkBoxStateMutableLiveData = SingleLiveEvent<CheckBoxState>()
 
@@ -54,7 +54,7 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
 
         }
 
-        // stateMutableLiveData.value = null
+
 
     }
 

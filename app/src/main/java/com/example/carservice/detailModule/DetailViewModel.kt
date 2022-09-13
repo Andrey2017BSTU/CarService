@@ -25,31 +25,7 @@ class DetailViewModel(private var appRepository: AppRepository) : ViewModel() {
             if (carBundle != null) {
                 brandNameMutableLiveData.postValue(carBundle.getString("EXTRA_BRAND_NAME"))
                 carId = carBundle.getInt("EXTRA_ID")
-////                modelNameMutableLiveData.postValue(carBundle.getString("EXTRA_MODEL_NAME"))
-////                yearMutableLiveData.postValue(carBundle.getString("EXTRA_YEAR"))
-////                currentMileageMutableLiveData.postValue(carBundle.getInt("EXTRA_CURRENT_MILEAGE"))
-////                oilMileageMutableLiveData.postValue(carBundle.getInt("EXTRA_OIL_MILEAGE"))
-////                airFiltMileageMutableLiveData.postValue(carBundle.getInt("EXTRA_AIR_FILT_MILEAGE"))
-////                freezMileageMutableLiveData.postValue(carBundle.getInt("EXTRA_FREEZ_MILEAGE"))
-////                grmMileageMutableLiveData.postValue(carBundle.getInt("EXTRA_GRM_MILEAGE"))
-//                val carItem = CarsItemTable(
-//                    brand_name = carBundle.getString("EXTRA_BRAND_NAME").toString(),
-//                    model_name = carBundle.getString("EXTRA_MODEL_NAME").toString(),
-//                    year = carBundle.getString("EXTRA_YEAR").toString(),
-//                    current_mileage = carBundle.getInt("EXTRA_CURRENT_MILEAGE"),
-//                    oil_last_service_mileage = carBundle.getInt("EXTRA_OIL_LAST_SERVICE"),
-//                    oil_mileage = carBundle.getInt("EXTRA_OIL_MILEAGE"),
-//                    air_filt_last_service_mileage = carBundle.getInt("EXTRA_AIR_FILT_LAST_SERVICE"),
-//                    air_filt_mileage = carBundle.getInt("EXTRA_AIR_FILT_MILEAGE"),
-//                    freez_last_service_mileage = carBundle.getInt("EXTRA_FREEZ_LAST_SERVICE"),
-//                    freez_mileage = carBundle.getInt("EXTRA_FREEZ_MILEAGE"),
-//                    grm_last_service_mileage = carBundle.getInt("EXTRA_GRM_LAST_SERVICE"),
-//                    grm_mileage = carBundle.getInt("EXTRA_GRM_MILEAGE")
-//
-//                )
-//                carItemMutableLiveData.postValue(carItem)
-//
-//
+
             }
 
             if (carBundle != null) {
@@ -104,6 +80,9 @@ class DetailViewModel(private var appRepository: AppRepository) : ViewModel() {
 
     }
 
+
+
+
     fun onPositiveDelete(carId: Int) {
         viewModelScope.launch {
             appRepository.deleteCarById(carId)
@@ -115,8 +94,8 @@ class DetailViewModel(private var appRepository: AppRepository) : ViewModel() {
 
     fun onPositiveUpdateCurrentMileage(carId: Int, updatedCurrentMileage: Int) {
 
-        viewModelScope.launch{
-            appRepository.updateCurrentMileageById(carId,updatedCurrentMileage)
+        viewModelScope.launch {
+            appRepository.updateCurrentMileageById(carId, updatedCurrentMileage)
 
         }
 

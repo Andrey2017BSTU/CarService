@@ -128,15 +128,6 @@ class AdapterEx(private val itemClickListener: OnItemClickListener) : RecyclerVi
     class ViewHolderEX(val binding: ItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
 
-//        init {
-//
-//            binding.root.setOnClickListener(View.OnClickListener {
-//                val position = adapterPosition
-//                Toast.makeText(binding.root.context, position.toString()  , Toast.LENGTH_SHORT).show()
-//
-//            })
-//        }
-
 
         fun bind(carItem: CarsItemTable, clickListener: OnItemClickListener){
 
