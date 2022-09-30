@@ -13,6 +13,7 @@ class StartDeleteCarAlertDialog : DialogFragment() {
     interface OnDeleteListener{
 
         fun onPositiveDeleteClicked()
+        fun onNegativeDeleteClicked()
 
     }
 
@@ -42,6 +43,7 @@ class StartDeleteCarAlertDialog : DialogFragment() {
                 "Нет"
             ) { dialogInterface: DialogInterface, _: Int ->
 
+                mListener.onNegativeDeleteClicked()
                 dialogInterface.dismiss()
 
             }

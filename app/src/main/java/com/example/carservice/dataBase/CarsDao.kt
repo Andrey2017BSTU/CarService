@@ -29,8 +29,35 @@ interface CarsDao {
     @Query("SELECT current_mileage FROM cars_item_table WHERE id = (:mCarId)")
     fun getCurrentMileageById(mCarId: Int): Flow<Int>
 
+    @Query("SELECT current_mileage FROM cars_item_table WHERE id = (:mCarId)")
+    suspend fun getCurrentMileageByIdSingle(mCarId: Int): Int
+
+    @Query("SELECT brand_name FROM cars_item_table WHERE id = (:mCarId) ")
+    fun getBrandNameByCarId(mCarId: Int): Flow<String>
+
+    @Query("SELECT model_name FROM cars_item_table WHERE id = (:mCarId) ")
+    fun getModelNameById(mCarId: Int): Flow<String>
+
     @Query("UPDATE cars_item_table SET current_mileage = (:mUpdatedCurrentMileage) WHERE id =(:mCarId)")
     suspend fun updateCurrentMileageById(mCarId: Int, mUpdatedCurrentMileage: Int)
+
+    @Query("UPDATE cars_item_table SET oil_last_service_mileage = (:updatedMileage) WHERE id = (:mCarId)")
+    suspend fun updateOilMileageToService(updatedMileage: Int, mCarId: Int)
+
+    @Query("UPDATE cars_item_table SET air_filt_last_service_mileage = (:updatedMileage) WHERE id = (:mCarId)")
+    suspend fun updateAirFiltMileageToService(updatedMileage: Int, mCarId: Int)
+
+    @Query("UPDATE cars_item_table SET freez_last_service_mileage = (:updatedMileage) WHERE id = (:mCarId)")
+    suspend fun updateFreezMileageToService(updatedMileage: Int, mCarId: Int)
+
+    @Query("UPDATE cars_item_table SET grm_last_service_mileage = (:updatedMileage) WHERE id = (:mCarId)")
+    suspend fun updateGRMMileageToService(updatedMileage: Int, mCarId: Int)
+
+    @Query("SELECT brand_name FROM cars_item_table WHERE id = (:mCarId) ")
+    suspend fun getBrandNameByCarIdSingle(mCarId: Int): String
+
+    @Query("SELECT model_name FROM cars_item_table WHERE id = (:mCarId) ")
+    suspend fun getModelNameByIdSingle(mCarId: Int): String
 
 
 }

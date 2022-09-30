@@ -22,8 +22,8 @@ class StartCheckBoxMileageAlertDialog(private val serviceType: ServiceType) : Di
 
     interface OnEnterListener {
         fun onPositiveButtonClicked(
-            service_interval: Int,
-            last_service_mileage: Int,
+            service_interval: String,
+            last_service_mileage: String,
             current_mileage_checker: Boolean
         )
 
@@ -116,35 +116,22 @@ class StartCheckBoxMileageAlertDialog(private val serviceType: ServiceType) : Di
         builder.setView(binding.root)
         builder.setPositiveButton(R.string.ok_rus_str) { _, _ ->
 
-            val serviceInterval =
-                binding.serviceIntervalEditText.text.toString()
-            val lastServiceMileage =
-                binding.lastServiceMileageEditText.text.toString()
-
-            val isEmptyEnter: Boolean =
-                serviceInterval == "" || !binding.currentMileageCheckbox.isChecked && lastServiceMileage == ""
-
-            if (isEmptyEnter) {
-
-                mListener.onPositiveButtonClicked(-1, -1, false)
-
-            } else {
                 if (!binding.currentMileageCheckbox.isChecked) {
                     mListener.onPositiveButtonClicked(
-                        binding.serviceIntervalEditText.text.toString().toInt(),
-                        binding.lastServiceMileageEditText.text.toString().toInt(),
+                        binding.serviceIntervalEditText.text.toString(),
+                        binding.lastServiceMileageEditText.text.toString(),
                         false
                     )
 
                 } else {
                     mListener.onPositiveButtonClicked(
-                        binding.serviceIntervalEditText.text.toString().toInt(),
-                        0,
+                        binding.serviceIntervalEditText.text.toString(),
+                        0.toString(),
                         true
                     )
                 }
             }
-        }
+
 
 
             .setNeutralButton(R.string.cancel_rus_str) { dialogInterface, _ ->

@@ -12,8 +12,6 @@
         android:id="@+id/frameLayout_port"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
-
         tools:context=".detail">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,8 +28,6 @@
                 app:layout_constraintEnd_toEndOf="@+id/car_logo_img_view"
                 app:layout_constraintStart_toStartOf="@+id/car_logo_img_view"
                 app:layout_constraintTop_toTopOf="@+id/car_logo_img_view"
-
-
                 />
 
             <ImageView
@@ -66,7 +62,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-
                 android:layout_marginEnd="8dp"
                 android:contentDescription="@string/detail_car_year"
                 android:text=""
@@ -81,7 +76,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-
                 android:layout_marginEnd="8dp"
                 android:contentDescription="@string/detail_car_mileage"
                 android:text=""
@@ -219,7 +213,7 @@
         app:layout_behavior="@string/bottom_sheet_behavior">
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/bottomsheet_headline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -235,21 +229,21 @@
             style="@style/selectableTextView"
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:layout_below="@+id/textView"
+            android:layout_below="@+id/bottomsheet_headline"
             android:layout_marginTop="15dp"
             android:layout_marginEnd="0dp"
-            android:layout_toStartOf="@+id/bottomsheet_oil_refresh_button"
+            android:layout_toStartOf="@+id/oil_bottomsheet_refresh_button"
             android:text="@string/oil_checker_str"
             android:textColor="?attr/colorOnSurface"
             android:textSize="18sp" />
 
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/bottomsheet_oil_refresh_button"
+            android:id="@+id/oil_bottomsheet_refresh_button"
             style="@style/MyIconButtonStyle"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_below="@+id/textView"
+            android:layout_below="@+id/bottomsheet_headline"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="15dp"
             android:layout_marginEnd="0dp"
@@ -264,7 +258,7 @@
             android:layout_height="80dp"
             android:layout_below="@+id/oil_bottomsheet_textview"
             android:layout_marginEnd="0dp"
-            android:layout_toStartOf="@+id/bottomsheet_air_filt_refresh_button"
+            android:layout_toStartOf="@+id/air_filt_bottomsheet_refresh_button"
             android:text="@string/air_filt_checker_str"
             android:textColor="?attr/colorOnSurface"
             android:textSize="18sp"
@@ -272,11 +266,11 @@
 
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/bottomsheet_air_filt_refresh_button"
+            android:id="@+id/air_filt_bottomsheet_refresh_button"
             style="@style/MyIconButtonStyle"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_below="@+id/bottomsheet_oil_refresh_button"
+            android:layout_below="@+id/oil_bottomsheet_textview"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="0dp"
             android:contentDescription="@string/air_filt_icon_button"
@@ -291,18 +285,18 @@
             android:layout_height="80dp"
             android:layout_below="@+id/air_filt_bottomsheet_textview"
             android:layout_marginEnd="0dp"
-            android:layout_toStartOf="@+id/bottomsheet_air_filt_refresh_button"
+            android:layout_toStartOf="@+id/air_filt_bottomsheet_refresh_button"
             android:text="@string/freez_checker_str"
             android:textColor="?attr/colorOnSurface"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/bottomsheet_freez_refresh_button"
+            android:id="@+id/freez_bottomsheet_refresh_button"
             style="@style/MyIconButtonStyle"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_below="@+id/bottomsheet_air_filt_refresh_button"
+            android:layout_below="@+id/air_filt_bottomsheet_textview"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="0dp"
             android:contentDescription="@string/freez_icon_button"
@@ -316,18 +310,18 @@
             android:layout_height="80dp"
             android:layout_below="@+id/freez_bottomsheet_textview"
             android:layout_marginEnd="0dp"
-            android:layout_toStartOf="@+id/bottomsheet_grm_refresh_button"
+            android:layout_toStartOf="@+id/grm_bottomsheet_refresh_button"
             android:text="@string/grm_checker_str"
             android:textColor="?attr/colorOnSurface"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/bottomsheet_grm_refresh_button"
+            android:id="@+id/grm_bottomsheet_refresh_button"
             style="@style/MyIconButtonStyle"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_below="@+id/bottomsheet_freez_refresh_button"
+            android:layout_below="@+id/freez_bottomsheet_textview"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="0dp"
             android:contentDescription="@string/grm_icon_button"

@@ -14,7 +14,6 @@ import com.example.carservice.appModule.AppRepository
 import com.example.carservice.dataBase.AppDataBase
 import com.example.carservice.databinding.CurrentMileageUpdateAllerDialogLayoutBinding
 import com.example.carservice.pixabayAPI.RetrofitService
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 
 class StartCurrentMileageUpdateAlertDialog : DialogFragment() {
@@ -34,7 +33,7 @@ class StartCurrentMileageUpdateAlertDialog : DialogFragment() {
 
     interface OnEnterListener {
 
-        fun onUpdatePositiveButtonClicked(updated_current_mileage: Int)
+        fun onUpdatePositiveButtonClicked(mUpdated_current_mileage: String)
         fun onUpdateNeutralButtonClicked()
 
     }
@@ -100,25 +99,16 @@ class StartCurrentMileageUpdateAlertDialog : DialogFragment() {
         builder.setTitle(getString(R.string.current_mileage_update_input_str))
         builder.setView(binding.root)
 
-
         builder.setPositiveButton(R.string.ok_rus_str) { dialogInterface: DialogInterface, _: Int ->
 
 
-            val mUpdatedCurrentMileage =
-                binding.updatedCurrentMileageInputText.text.toString().toInt()
-            if (mUpdatedCurrentMileage <= 0) {
+            val updatedCurrentMileage =
+                binding.updatedCurrentMileageInputText.text.toString()
 
-                Snackbar.make(
-                    binding.root,
-                    R.string.incorrect_updated_current_mileage_snack_bar,
-                    Snackbar.LENGTH_INDEFINITE
-                ).show()
-            } else {
+            mListener.onUpdatePositiveButtonClicked(updatedCurrentMileage)
+            dialogInterface.dismiss()
 
-                mListener.onUpdatePositiveButtonClicked(mUpdatedCurrentMileage)
-                dialogInterface.dismiss()
 
-            }
         }
             .setNeutralButton(
                 R.string.cancel_rus_str
@@ -127,11 +117,11 @@ class StartCurrentMileageUpdateAlertDialog : DialogFragment() {
                 mListener.onUpdateNeutralButtonClicked()
                 dialogInterface.dismiss()
 
-
             }
         isCancelable = false
         return builder.create()
     }
+
 
     private fun setErrorEnterOnLayout(editText: TextInputLayout, s: Editable?) {
 

@@ -31,7 +31,27 @@ class AppRepository(
 
     fun getCurrentMileageById(carId: Int) = dataBaseObj.dao().getCurrentMileageById(carId)
 
+    suspend fun getCurrentMileageByIdSingle(carId: Int) = dataBaseObj.dao().getCurrentMileageByIdSingle(carId)
+
     suspend fun updateCurrentMileageById (carId: Int, updatedCurrentMileage: Int) = dataBaseObj.dao().updateCurrentMileageById(carId,updatedCurrentMileage)
+
+    fun getBrandNameById(carId: Int) = dataBaseObj.dao().getBrandNameByCarId(carId)
+
+    fun getModelNameById(carId: Int) = dataBaseObj.dao().getModelNameById(carId)
+
+    suspend fun getBrandNameByIdSingle(carId: Int) = dataBaseObj.dao().getBrandNameByCarIdSingle(carId)
+
+    suspend fun getModelNameByIdSingle(carId: Int) = dataBaseObj.dao().getModelNameByIdSingle(carId)
+
+    suspend fun updateOilMileageToService(updatedMileage: Int, carId: Int) = dataBaseObj.dao().updateOilMileageToService(updatedMileage,carId)
+
+    suspend fun updateAirFiltMileageToService(updatedMileage: Int, carId: Int) = dataBaseObj.dao().updateAirFiltMileageToService(updatedMileage,carId)
+
+    suspend fun updateFreezMileageToService(updatedMileage: Int, carId: Int) = dataBaseObj.dao().updateFreezMileageToService(updatedMileage,carId)
+
+    suspend fun updateGRMMileageToService(updatedMileage: Int, carId: Int) = dataBaseObj.dao().updateGRMMileageToService(updatedMileage,carId)
+
+
 
 
 }

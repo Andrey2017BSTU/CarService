@@ -30,7 +30,6 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
             AppRepository(
                 AppDataBase.getDatabase(requireContext()),
                 RetrofitService.invoke()
-
             )
 
         )
@@ -80,7 +79,7 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
         }
 
-        // TODO: Протестить варианты
+
         viewModelObj.checkBoxStateMutableLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is CheckBoxState.IncorrectEnter -> {
@@ -171,10 +170,8 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
                     Snackbar.make(binding.root, R.string.successful_insert, Snackbar.LENGTH_LONG)
                         .show()
 
-// TODO: Найти решение по-лучше
                     val fragmentManager = parentFragmentManager
                     fragmentManager.popBackStack()
-
 
                 }
                 is AddingState.UnSuccess -> Snackbar.make(
@@ -265,7 +262,6 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
     }
 
 
-
     private fun addNewCarToDataBase() {
         viewModelObj.onCarAdding(
             binding.brandAutCompTextView.text.toString(),
@@ -312,8 +308,8 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
     }
 
     override fun onPositiveButtonClicked(
-        service_interval: Int,
-        last_service_mileage: Int,
+        service_interval: String,
+        last_service_mileage: String,
         current_mileage_checker: Boolean
     ) {
 
@@ -331,60 +327,46 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
     override fun onNeutralButtonClicked() {
 
         checkboxOffById(serviceTypeIs)
-
         viewModelObj.onNeutralButtonClickedCheckBox(serviceTypeIs)
+
     }
 
 
-    override fun onClick(p0: View?) {
-        if (p0 is CheckBox) {
-            val checked: Boolean = p0.isChecked
-// TODO: Развернуть цепочку условий полиморфизмом
-            when (p0.id) {
-                R.id.oil_checkBox -> {
-                    if (checked) {
-                        viewModelObj.startAlertDialog(parentFragmentManager, ServiceType.OIL)
-                        serviceTypeIs = ServiceType.OIL
-                    } else {
+    override fun onClick(clickedView: View?) {
 
-                        checkboxOffById(ServiceType.OIL)
-                    }
-                }
-                R.id.air_filt_checkBox -> {
-                    if (checked) {
-                        viewModelObj.startAlertDialog(
-                            parentFragmentManager,
-                            ServiceType.AIR_FILT
-                        )
-                        serviceTypeIs = ServiceType.AIR_FILT
-                    } else {
-                        checkboxOffById(ServiceType.AIR_FILT)
-                    }
-                }
-                R.id.freez_checkBox -> {
-                    if (checked) {
-                        viewModelObj.startAlertDialog(parentFragmentManager, ServiceType.FREEZ)
-                        serviceTypeIs = ServiceType.FREEZ
-                    } else {
-                        checkboxOffById(ServiceType.FREEZ)
-                    }
+        if (clickedView is CheckBox) {
 
+            val isChecked: Boolean = clickedView.isChecked
 
-                }
+            when (clickedView.id) {
+                R.id.oil_checkBox ->
+                    serviceTypeIs = ServiceType.OIL
 
-                R.id.grm_checkBox -> {
-                    if (checked) {
-                        viewModelObj.startAlertDialog(parentFragmentManager, ServiceType.GRM)
-                        serviceTypeIs = ServiceType.GRM
-                    } else {
-                        checkboxOffById(ServiceType.GRM)
-                    }
+                R.id.air_filt_checkBox ->
+                    serviceTypeIs = ServiceType.AIR_FILT
 
+                R.id.freez_checkBox ->
+                    serviceTypeIs = ServiceType.FREEZ
 
-                }
-
+                R.id.grm_checkBox ->
+                    serviceTypeIs = ServiceType.GRM
 
             }
+
+            handleCheckBox(serviceTypeIs, isChecked)
+
+        }
+    }
+
+    private fun handleCheckBox(serviceType: ServiceType, isChecked: Boolean) {
+        if (isChecked) {
+
+            viewModelObj.startAlertDialog(parentFragmentManager, serviceType)
+
+        } else {
+
+            checkboxOffById(serviceType)
+
         }
     }
 

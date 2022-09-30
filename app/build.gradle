@@ -52,11 +52,13 @@ android {
     buildFeatures {
         viewBinding true
     }
+    namespace 'com.example.carservice'
 
 
 }
 
 dependencies {
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     def roomVersion = "2.4.3"
     implementation "androidx.room:room-runtime:$roomVersion"
     annotationProcessor "androidx.room:room-compiler:$roomVersion"

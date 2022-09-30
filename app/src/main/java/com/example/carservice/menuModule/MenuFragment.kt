@@ -5,11 +5,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.carservice.R
 import com.example.carservice.appModule.AppRepository
 import com.example.carservice.carCreatingModule.CarCreatingFragment
@@ -33,7 +33,6 @@ class MenuFragment : Fragment(), AdapterEx.OnItemClickListener {
         )
     }
 
-
     private var recyclerAdapter = AdapterEx(this)
 
 
@@ -50,16 +49,22 @@ class MenuFragment : Fragment(), AdapterEx.OnItemClickListener {
         viewModelObj.menuViewModelInit()
         binding.recyclerview.adapter = recyclerAdapter
 
+        binding.recyclerview.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
 
+                super.onScrolled(recyclerView, dx, dy)
+                Log.v("scroll", binding.addCarButton.shrinkMotionSpec.toString())
+                if (dy > 0) binding.addCarButton.shrink()
+
+            }
+        })
         viewModelObj.recyclerListLiveData.observe(viewLifecycleOwner) {
 
             recyclerAdapter.setCarsListAdapter(it)
             Log.v("Fragment_obs", "Adapter changes")
 
         }
-
-
 
         binding.addCarButton.setOnClickListener {
 
@@ -72,11 +77,6 @@ class MenuFragment : Fragment(), AdapterEx.OnItemClickListener {
 
             }
         }
-
-
-
-
-
         return binding.root
     }
 
@@ -115,7 +115,5 @@ class MenuFragment : Fragment(), AdapterEx.OnItemClickListener {
             addToBackStack(null)
 
         }
-        Toast.makeText(context, carItem.id.toString() + " " + carItem.image_url, Toast.LENGTH_LONG)
-            .show()
     }
 }
