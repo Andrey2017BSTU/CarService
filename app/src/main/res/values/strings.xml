@@ -18,6 +18,7 @@
     <string name="current_mileage_update_input_str">Введите обновлённый пробег автомобиля</string>
     <string name="update_current_mileage_option_str">Обновить текущий пробег</string>
     <string name="delete_car_option_str">Удалить автомобиль</string>
+    <string name="edit_car_option_str">Изменить автомобиль</string>
     <string name="current_mileage_update_aller_dialog_str">Текущий пробег:\u0020</string>
     <string name="updated_current_mileage_hint_update_aller_dialog_str">Введите пробег</string>
     <string name="oil_icon_button">oil_bottomsheet_refresh_button</string>
