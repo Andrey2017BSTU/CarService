@@ -10,9 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.carservice.appModule.AppRepository
 import com.example.carservice.appModule.ServiceType
 import com.example.carservice.appModule.SingleLiveEvent
-import com.example.carservice.dataBase.AppDataBase
 import com.example.carservice.dataBase.CarsItemTable
-import com.example.carservice.pixabayAPI.RetrofitService
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -44,9 +42,7 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
     private val grmServiceList = ServiceList()
 
 
-    fun init(dataBaseObj: AppDataBase, _ret: RetrofitService) {
-
-        appRepository = AppRepository(dataBaseObj, _ret)
+    fun carCreatingViewModelInit() {
 
         viewModelScope.launch {
             appRepository.getBrandsOfCars().collect { item ->

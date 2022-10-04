@@ -19,7 +19,7 @@ import com.example.carservice.databinding.MenuBinding
 import com.example.carservice.detailModule.DetailFragment
 import com.example.carservice.pixabayAPI.RetrofitService
 
-class MenuFragment : Fragment(), AdapterEx.OnItemClickListener {
+class MenuFragment : Fragment(), MenuAdapter.OnItemClickListener {
 
     private var _binding: MenuBinding? = null
     private val binding get() = _binding!!
@@ -33,7 +33,7 @@ class MenuFragment : Fragment(), AdapterEx.OnItemClickListener {
         )
     }
 
-    private var recyclerAdapter = AdapterEx(this)
+    private var recyclerAdapter = MenuAdapter(this)
 
 
     override fun onCreateView(

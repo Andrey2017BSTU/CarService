@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/service_interval_dialog_hint_str"
             android:imeOptions="actionDone"
+            android:maxLength="6"
             android:inputType="number"
             android:paddingStart="5dp"
             android:paddingEnd="0dp"
@@ -57,12 +58,12 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/last_service_mileage_edit_text"
             android:layout_width="match_parent"
-
             android:layout_height="wrap_content"
             android:hint="@string/last_service_mileage_dialog_hint_str"
             android:imeOptions="actionDone"
             android:inputType="number"
             android:paddingStart="5dp"
+            android:maxLength="6"
             android:paddingEnd="0dp"
             android:selectAllOnFocus="true" />
     </com.google.android.material.textfield.TextInputLayout>

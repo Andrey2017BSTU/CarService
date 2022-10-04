@@ -15,7 +15,7 @@ import com.example.carservice.R
 import com.example.carservice.dataBase.CarsItemTable
 import com.example.carservice.databinding.ItemBinding
 
-class AdapterEx(private val itemClickListener: OnItemClickListener) : RecyclerView.Adapter<AdapterEx.ViewHolderEX>() {
+class MenuAdapter(private val itemClickListener: OnItemClickListener) : RecyclerView.Adapter<MenuAdapter.ViewHolderEX>() {
 
 
     private var carsList = mutableListOf<CarsItemTable>()
