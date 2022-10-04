@@ -34,7 +34,6 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
         )
 
-
     }
 
     private var _binding: CarCreatingBinding? = null
@@ -52,7 +51,7 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
         _binding = CarCreatingBinding.inflate(inflater, container, false)
 
 
-        viewModelObj.init(AppDataBase.getDatabase(requireContext()), RetrofitService.invoke())
+        viewModelObj.carCreatingViewModelInit()
 
         viewModelObj.brandNameMutableLiveData.observe(viewLifecycleOwner) {
 
