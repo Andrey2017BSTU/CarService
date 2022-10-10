@@ -1,5 +1,6 @@
 package com.example.carservice.carCreatingModule
 
+import android.os.Bundle
 import android.text.Editable
 import android.util.Log
 import androidx.fragment.app.DialogFragment
@@ -27,10 +28,11 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
 
     val brandNameMutableLiveData = MutableLiveData<List<String>>()
     val modelNameByBrandMutableLiveData = MutableLiveData<List<String>>()
+    val carMutableLiveData = MutableLiveData<CarsItemTable>()
 
 
-    val addingStateMutableLiveData =
-        SingleLiveEvent<AddingState>()
+    val addingOrEditingStateMutableLiveData =
+        SingleLiveEvent<AddingOrEditingState>()
     val checkBoxStateMutableLiveData =
         SingleLiveEvent<CheckBoxState>()
 
@@ -40,6 +42,8 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
     private val airFiltServiceList = ServiceList()
     private val freezServiceList = ServiceList()
     private val grmServiceList = ServiceList()
+    private var carIdFromBundle: Int = 0
+    private var isEditingMode: Boolean = false
 
 
     fun carCreatingViewModelInit() {
@@ -52,7 +56,24 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
 
         }
 
+        isEditingMode = false
 
+    }
+
+    fun carEditingInit(bundle: Bundle?) {
+
+        viewModelScope.launch {
+            if (bundle != null) {
+                carIdFromBundle = bundle.getInt("EXTRA_ID")
+            }
+            if (bundle != null) {
+                appRepository.getCarById(carIdFromBundle).collect {
+                    carMutableLiveData.postValue(it)
+                }
+            }
+        }
+
+        isEditingMode = true
     }
 
 
@@ -64,10 +85,20 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
 
     }
 
-    fun getModelNameByBrand(brand_id: Int) {
+    fun getModelNameByBrandId(brand_id: Int) {
         viewModelScope.launch {
             appRepository.getModelNameByBrandId(brand_id).collect { item ->
                 modelNameByBrandMutableLiveData.postValue(item)
+
+            }
+        }
+
+    }
+
+    fun getModelNameByBrandName(brand_name: String) {
+        viewModelScope.launch {
+            appRepository.getBrandIdByBrandName(brand_name.uppercase()).collect { item ->
+                getModelNameByBrandId(item)
 
             }
         }
@@ -86,11 +117,11 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
     }
 
 
-    private fun handleAddingState(state: AddingState) {
+    private fun handleAddingOrEditingState(state: AddingOrEditingState) {
         viewModelScope.launch {
 
             when (state) {
-                is AddingState.Success -> {
+                is AddingOrEditingState.SuccessCarAdding -> {
 
                     val carEntity = CarsItemTable(
                         brand_name = state.name,
@@ -99,8 +130,8 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
                         current_mileage = state.currentMileage.toInt(),
                     )
                     finalCarAdding(carEntity)
-                    addingStateMutableLiveData.postValue(
-                        AddingState.Success(
+                    addingOrEditingStateMutableLiveData.postValue(
+                        AddingOrEditingState.SuccessCarAdding(
                             state.name,
                             state.model,
                             state.year,
@@ -108,11 +139,29 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
                         )
                     )
                 }
-                AddingState.AnyViewEmpty -> addingStateMutableLiveData.postValue(AddingState.AnyViewEmpty)
-                AddingState.IncorrectCurrentMileage -> addingStateMutableLiveData.postValue(
-                    AddingState.IncorrectCurrentMileage
+                is AddingOrEditingState.SuccessCarEditing -> {
+                    val carEntity = CarsItemTable(
+                        brand_name = state.name,
+                        model_name = state.model,
+                        year = state.year,
+                        current_mileage = state.currentMileage.toInt(),
+                    )
+                    finalCarEditing(carEntity)
+                    addingOrEditingStateMutableLiveData.postValue(
+                        AddingOrEditingState.SuccessCarEditing(
+                            state.name,
+                            state.model,
+                            state.year,
+                            state.currentMileage
+                        )
+                    )
+                }
+                AddingOrEditingState.AnyViewEmpty -> addingOrEditingStateMutableLiveData.postValue(AddingOrEditingState.AnyViewEmpty)
+                AddingOrEditingState.IncorrectCurrentMileage -> addingOrEditingStateMutableLiveData.postValue(
+                    AddingOrEditingState.IncorrectCurrentMileage
                 )
-                AddingState.UnSuccess -> addingStateMutableLiveData.postValue(AddingState.UnSuccess)
+                AddingOrEditingState.UnSuccessfulAdding -> addingOrEditingStateMutableLiveData.postValue(AddingOrEditingState.UnSuccessfulAdding)
+                AddingOrEditingState.UnSuccessfulEditing -> addingOrEditingStateMutableLiveData.postValue(AddingOrEditingState.UnSuccessfulEditing)
             }
         }
 
@@ -207,7 +256,7 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
         }
     }
 
-    fun onCarAdding(name: String, model: String, year: String, currentMileage: String) {
+    fun onCarAddingOrEditing(name: String, model: String, year: String, currentMileage: String) {
         val isAnyViewEmpty: Boolean =
             name == "" || model == "" || year == ""
         val isIncorrectCurrentMileage: Boolean =
@@ -216,16 +265,44 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
 
         if (isAnyViewEmpty) {
 
-            handleAddingState(AddingState.AnyViewEmpty)
+            handleAddingOrEditingState(AddingOrEditingState.AnyViewEmpty)
 
         } else if (isIncorrectCurrentMileage) {
 
-            handleAddingState(AddingState.IncorrectCurrentMileage)
+            handleAddingOrEditingState(AddingOrEditingState.IncorrectCurrentMileage)
+
+        } else if (isEditingMode) {
+
+            handleAddingOrEditingState(AddingOrEditingState.SuccessCarEditing(name, model, year, currentMileage))
 
         } else {
 
+            handleAddingOrEditingState(AddingOrEditingState.SuccessCarAdding(name, model, year, currentMileage))
 
-            handleAddingState(AddingState.Success(name, model, year, currentMileage))
+        }
+
+
+    }
+
+    private fun finalCarEditing(carItem: CarsItemTable) {
+        viewModelScope.launch {
+            val carItemVm = CarsItemTable(
+                id = carIdFromBundle,
+                brand_name = carItem.brand_name,
+                model_name = carItem.model_name,
+                year = carItem.year,
+                current_mileage = updatableCurrentMileage,
+                oil_last_service_mileage = getLastServiceMileage(ServiceType.OIL),
+                oil_mileage = oilServiceList.serviceInterval,
+                air_filt_last_service_mileage = getLastServiceMileage(ServiceType.AIR_FILT),
+                air_filt_mileage = airFiltServiceList.serviceInterval,
+                freez_last_service_mileage = getLastServiceMileage(ServiceType.FREEZ),
+                freez_mileage = freezServiceList.serviceInterval,
+                grm_last_service_mileage = getLastServiceMileage(ServiceType.GRM),
+                grm_mileage = grmServiceList.serviceInterval
+            )
+
+            appRepository.editCar(carItemVm)
 
         }
 

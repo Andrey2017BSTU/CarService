@@ -23,6 +23,7 @@ class DetailViewModel(private var appRepository: AppRepository) : ViewModel() {
     val carCurrentMileageMutableLiveData = MutableLiveData<Int>()
     val warningsMutableLiveData = MutableLiveData<HashMap<ServiceType, Boolean>>()
     val updateMileageStateMutableLiveData = SingleLiveEvent<UpdateMileageState>()
+    val editCarMutableLiveData = MutableLiveData<CarsItemTable>()
 
     private val warningsItem = HashMap<ServiceType, Boolean>()
     private var carIdFromBundle: Int = 0
@@ -30,6 +31,7 @@ class DetailViewModel(private var appRepository: AppRepository) : ViewModel() {
 
 
     fun detailViewModelInit(carBundle: Bundle?) {
+
         viewModelScope.launch {
             if (carBundle != null) {
 
@@ -91,7 +93,6 @@ class DetailViewModel(private var appRepository: AppRepository) : ViewModel() {
         viewModelScope.launch {
             if (carBundle != null) {
 
-// TODO: Почему срабатывает даже когда меняешь только brand и model?. upd: Исправленноб протестить
                 appRepository.getUriByQuery(
                     appRepository.getBrandNameByIdSingle(carIdFromBundle) + " " + appRepository.getModelNameByIdSingle(
                         carIdFromBundle
@@ -124,6 +125,12 @@ class DetailViewModel(private var appRepository: AppRepository) : ViewModel() {
 
             }
 
+
+        }
+
+        viewModelScope.launch {
+
+            editCarMutableLiveData.postValue(appRepository.getCarByIdSingle(carIdFromBundle))
 
         }
 
@@ -246,4 +253,6 @@ class DetailViewModel(private var appRepository: AppRepository) : ViewModel() {
         super.onCleared()
         Log.i("VM_Detail", "vm Cleared")
     }
+
+
 }

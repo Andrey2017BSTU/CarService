@@ -34,7 +34,9 @@
     <string name="detail_bottomsheet_headline_str">Пробег до замены:</string>
     <string name="is_not_chosen_bottomsheet_str">Не выбранно</string>
     <string name="successful_insert">Сохранение успешно</string>
+    <string name="successful_update">Изменение успешно</string>
     <string name="unsuccessful_insert">Ошибка сохранения</string>
+    <string name="unsuccessful_update">Ошибка изменения</string>
     <string name="ok_rus_str_snack_bar">Хорошо</string>
     <string name="ok_rus_str">ОК</string>
     <string name="cancel_rus_str">Отмена</string>

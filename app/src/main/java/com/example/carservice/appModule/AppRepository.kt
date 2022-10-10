@@ -20,6 +20,9 @@ class AppRepository(
     fun getModelNameByBrandId(brand_id: Int): Flow<List<String>> =
         dataBaseObj.dao().getModelNameByBrandId(brand_id)
 
+    fun getBrandIdByBrandName(brand_name: String): Flow<Int> =
+        dataBaseObj.dao().getBrandIdByBrandName(brand_name)
+
     suspend fun addCarToDataBase(carItem: CarsItemTable): Long = dataBaseObj.dao().addCar(carItem)
 
     fun getCarById(carId: Int): Flow<CarsItemTable> = dataBaseObj.dao().getCarById(carId)
@@ -50,6 +53,10 @@ class AppRepository(
     suspend fun updateFreezMileageToService(updatedMileage: Int, carId: Int) = dataBaseObj.dao().updateFreezMileageToService(updatedMileage,carId)
 
     suspend fun updateGRMMileageToService(updatedMileage: Int, carId: Int) = dataBaseObj.dao().updateGRMMileageToService(updatedMileage,carId)
+
+    suspend fun  getCarByIdSingle(carId: Int) = dataBaseObj.dao().getCarByIdSingle(carId)
+
+    suspend fun editCar(carItem: CarsItemTable) = dataBaseObj.dao().editCar(carItem)
 
 
 

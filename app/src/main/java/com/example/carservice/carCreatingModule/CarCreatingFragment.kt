@@ -50,8 +50,26 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
         _binding = CarCreatingBinding.inflate(inflater, container, false)
 
-
         viewModelObj.carCreatingViewModelInit()
+        viewModelObj.carEditingInit(arguments)
+
+        viewModelObj.carMutableLiveData.observe(viewLifecycleOwner){
+            binding.brandAutCompTextView.setText(it.brand_name)
+            binding.modelAutCompTextView.setText(it.model_name)
+
+
+            binding.yearAutCompTextView.setText(it.year)
+            binding.yearAutCompTextView.setAdapter(
+                ArrayAdapter(
+                    requireContext(),
+                    R.layout.drop_down_item,
+                    viewModelObj.getListOfYears()
+                )
+            )
+            binding.currentMileageEditText.setText(it.current_mileage.toString())
+
+        }
+
 
         viewModelObj.brandNameMutableLiveData.observe(viewLifecycleOwner) {
 
@@ -62,9 +80,8 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
                     it
                 )
             )
-
+            Log.v("Car_creating_adapt","brand")
         }
-
 
         viewModelObj.modelNameByBrandMutableLiveData.observe(viewLifecycleOwner) {
 
@@ -75,7 +92,7 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
                     it
                 )
             )
-
+            Log.v("Car_creating_adapt","model")
         }
 
 
@@ -122,12 +139,11 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
 
         binding.modelAutCompTextView.setOnClickListener {
-            if (binding.modelAutCompTextView.adapter == null) {
+            if (binding.brandAutCompTextView.text.toString().isBlank()) {
                 binding.brandTextLayout.error = getString(R.string.brand_not_chosen)
             } else {
                 binding.brandTextLayout.error = null
             }
-
 
         }
 
@@ -136,16 +152,29 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
             binding.modelAutCompTextView.setText("")
             binding.brandTextLayout.error = null
-            viewModelObj.getModelNameByBrand(position + 1)
-
+            viewModelObj.getModelNameByBrandId(position + 1)
 
         }
 
+        binding.brandAutCompTextView.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
-        viewModelObj.addingStateMutableLiveData.observe(viewLifecycleOwner) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                viewModelObj.getModelNameByBrandName(p0.toString())
+                Log.v("car_Creating_Selected_Brand",p0.toString())
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+        })
+
+        viewModelObj.addingOrEditingStateMutableLiveData.observe(viewLifecycleOwner) {
             when (it) {
 
-                is AddingState.AnyViewEmpty -> Snackbar.make(
+                is AddingOrEditingState.AnyViewEmpty -> Snackbar.make(
                     binding.root,
                     R.string.fill_required_fields,
                     Snackbar.LENGTH_INDEFINITE
@@ -155,7 +184,7 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
                 }.show()
 
-                is AddingState.IncorrectCurrentMileage -> Snackbar.make(
+                is AddingOrEditingState.IncorrectCurrentMileage -> Snackbar.make(
                     binding.root,
                     R.string.incorrect_current_mileage_str,
                     Snackbar.LENGTH_INDEFINITE
@@ -165,7 +194,7 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
                 }.show()
 
-                is AddingState.Success -> {
+                is AddingOrEditingState.SuccessCarAdding -> {
                     Snackbar.make(binding.root, R.string.successful_insert, Snackbar.LENGTH_LONG)
                         .show()
 
@@ -173,7 +202,16 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
                     fragmentManager.popBackStack()
 
                 }
-                is AddingState.UnSuccess -> Snackbar.make(
+
+                is AddingOrEditingState.SuccessCarEditing -> {
+                    Snackbar.make(binding.root, R.string.successful_update, Snackbar.LENGTH_LONG)
+                        .show()
+                    val fragmentManager = parentFragmentManager
+                    fragmentManager.popBackStack()
+
+                }
+
+                is AddingOrEditingState.UnSuccessfulAdding -> Snackbar.make(
                     binding.root,
                     R.string.unsuccessful_insert,
                     Snackbar.LENGTH_INDEFINITE
@@ -183,7 +221,15 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
                 }.show()
 
+                is AddingOrEditingState.UnSuccessfulEditing -> Snackbar.make(
+                    binding.root,
+                    R.string.unsuccessful_update,
+                    Snackbar.LENGTH_INDEFINITE
+                ).setAction(R.string.ok_rus_str_snack_bar) { item ->
 
+                    item.visibility = View.GONE
+
+                }.show()
             }
 
 
@@ -204,8 +250,9 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
                 R.layout.drop_down_item,
                 viewModelObj.getListOfYears()
             )
-        )
 
+        )
+        Log.v("Car_creating_adapt","year")
 
         binding.oilCheckBox.setOnClickListener(this)
         binding.airFiltCheckBox.setOnClickListener(this)
@@ -262,7 +309,7 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
 
     private fun addNewCarToDataBase() {
-        viewModelObj.onCarAdding(
+        viewModelObj.onCarAddingOrEditing(
             binding.brandAutCompTextView.text.toString(),
             binding.modelAutCompTextView.text.toString(),
             binding.yearAutCompTextView.text.toString(),
