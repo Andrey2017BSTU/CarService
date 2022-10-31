@@ -28,7 +28,7 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
 
     val brandNameMutableLiveData = MutableLiveData<List<String>>()
     val modelNameByBrandMutableLiveData = MutableLiveData<List<String>>()
-    val carMutableLiveData = MutableLiveData<CarsItemTable>()
+    val carEditingMutableLiveData = MutableLiveData<CarsItemTable>()
 
 
     val addingOrEditingStateMutableLiveData =
@@ -68,12 +68,13 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
             }
             if (bundle != null) {
                 appRepository.getCarById(carIdFromBundle).collect {
-                    carMutableLiveData.postValue(it)
+                    carEditingMutableLiveData.postValue(it)
                 }
             }
         }
 
         isEditingMode = true
+
     }
 
 

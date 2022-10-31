@@ -53,7 +53,7 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
         viewModelObj.carCreatingViewModelInit()
         viewModelObj.carEditingInit(arguments)
 
-        viewModelObj.carMutableLiveData.observe(viewLifecycleOwner){
+        viewModelObj.carEditingMutableLiveData.observe(viewLifecycleOwner){
             binding.brandAutCompTextView.setText(it.brand_name)
             binding.modelAutCompTextView.setText(it.model_name)
 
