@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -13,6 +14,9 @@ interface CarsDao {
 
     @Query("SELECT model_name FROM model_table WHERE brand_id = :mBrandId")
     fun getModelNameByBrandId(mBrandId: Int): Flow<List<String>>
+
+    @Query("SELECT id FROM brand_table WHERE brand_name = :mBrandName")
+    fun getBrandIdByBrandName(mBrandName: String): Flow<Int>
 
     @Query("SELECT * FROM cars_item_table")
     fun getAllCars(): Flow<List<CarsItemTable>>
@@ -58,6 +62,14 @@ interface CarsDao {
 
     @Query("SELECT model_name FROM cars_item_table WHERE id = (:mCarId) ")
     suspend fun getModelNameByIdSingle(mCarId: Int): String
+
+    @Query("SELECT * FROM cars_item_table WHERE id = (:mCarId)")
+    suspend fun getCarByIdSingle(mCarId: Int): CarsItemTable
+
+    @Update
+    suspend fun editCar(carsItem: CarsItemTable)
+
+
 
 
 }

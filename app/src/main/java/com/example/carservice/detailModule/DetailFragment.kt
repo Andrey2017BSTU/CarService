@@ -12,6 +12,7 @@ import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import com.bumptech.glide.Glide
@@ -22,6 +23,7 @@ import com.bumptech.glide.request.target.Target
 import com.example.carservice.R
 import com.example.carservice.appModule.AppRepository
 import com.example.carservice.appModule.ServiceType
+import com.example.carservice.carCreatingModule.CarCreatingFragment
 import com.example.carservice.dataBase.AppDataBase
 import com.example.carservice.databinding.DetailBinding
 import com.example.carservice.pixabayAPI.RetrofitService
@@ -221,6 +223,7 @@ class DetailFragment : Fragment(), StartDeleteCarAlertDialog.OnDeleteListener,
 
                     R.id.update_current_mileage_option -> makeUpdate()
                     R.id.delete_car_option -> makeDelete()
+                    R.id.edit_car_option -> makeEdit()
 
                 }
 
@@ -230,6 +233,37 @@ class DetailFragment : Fragment(), StartDeleteCarAlertDialog.OnDeleteListener,
 
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    private fun makeEdit() {
+
+        viewModelObj.editCarMutableLiveData.observe(viewLifecycleOwner) {
+            val bundle = Bundle()
+            bundle.putInt("EXTRA_ID", it.id)
+            bundle.putString("EXTRA_BRAND_NAME", it.brand_name)
+            bundle.putString("EXTRA_MODEL_NAME", it.model_name)
+            bundle.putString("EXTRA_YEAR", it.year)
+            bundle.putInt("EXTRA_CURRENT_MILEAGE", it.current_mileage)
+            bundle.putString("EXTRA_URL", it.image_url)
+            bundle.putInt("EXTRA_OIL_MILEAGE", it.oil_mileage)
+            bundle.putInt("EXTRA_OIL_LAST_SERVICE", it.oil_last_service_mileage)
+            bundle.putInt("EXTRA_AIR_FILT_MILEAGE", it.air_filt_mileage)
+            bundle.putInt("EXTRA_AIR_FILT_LAST_SERVICE", it.air_filt_last_service_mileage)
+            bundle.putInt("EXTRA_FREEZ_MILEAGE", it.freez_mileage)
+            bundle.putInt("EXTRA_FREEZ_LAST_SERVICE", it.freez_last_service_mileage)
+            bundle.putInt("EXTRA_GRM_MILEAGE", it.grm_mileage)
+            bundle.putInt("EXTRA_GRM_LAST_SERVICE", it.grm_last_service_mileage)
+            parentFragmentManager.beginTransaction()
+            parentFragmentManager.commit {
+                Log.v("Detail_fragm","commit")
+                val carCreating = CarCreatingFragment()
+                carCreating.arguments = bundle
+                setReorderingAllowed(true)
+                replace(R.id.fr, carCreating, "car_create")
+                addToBackStack(null)
+            }
+        }
+
     }
 
 
