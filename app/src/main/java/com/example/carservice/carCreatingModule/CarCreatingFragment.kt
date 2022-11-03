@@ -53,7 +53,7 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
         viewModelObj.carCreatingViewModelInit()
         viewModelObj.carEditingInit(arguments)
 
-        viewModelObj.carEditingMutableLiveData.observe(viewLifecycleOwner){
+        viewModelObj.carEditingMutableLiveData.observe(viewLifecycleOwner) {
             binding.brandAutCompTextView.setText(it.brand_name)
             binding.modelAutCompTextView.setText(it.model_name)
 
@@ -80,7 +80,7 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
                     it
                 )
             )
-            Log.v("Car_creating_adapt","brand")
+            Log.v("Car_creating_adapt", "brand")
         }
 
         viewModelObj.modelNameByBrandMutableLiveData.observe(viewLifecycleOwner) {
@@ -92,7 +92,7 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
                     it
                 )
             )
-            Log.v("Car_creating_adapt","model")
+            Log.v("Car_creating_adapt", "model")
         }
 
 
@@ -161,12 +161,17 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
             }
 
+            /// TODO: Баг: Если не выбрать марку и перевернуть экран - ошибка с Null. Почему при перевороте срабатывает? Upd: Исправил с помощью проверки, протестить(мб добавить в остальные TextWatcher)
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                viewModelObj.getModelNameByBrandName(p0.toString())
-                Log.v("car_Creating_Selected_Brand",p0.toString())
+                if (p0.toString() != "") {
+                    viewModelObj.getModelNameByBrandName(p0.toString())
+                }
+
+                Log.v("car_Creating_Selected_Brand_onTextChanged", p0.toString())
             }
 
             override fun afterTextChanged(p0: Editable?) {
+                Log.v("car_Creating_Selected_Brand_afterTextChanged", p0.toString())
 
             }
         })
@@ -252,7 +257,7 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
             )
 
         )
-        Log.v("Car_creating_adapt","year")
+        Log.v("Car_creating_adapt", "year")
 
         binding.oilCheckBox.setOnClickListener(this)
         binding.airFiltCheckBox.setOnClickListener(this)
