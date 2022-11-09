@@ -47,4 +47,5 @@
     <string name="fill_required_fields">Заполните обязательные поля (*)</string>
     <string name="incorrect_enter">Неверное значение</string>
     <string name="brand_not_chosen">Марка автомобиля не выбрана</string>
+    <string name="add_a_photo">Добавить фото</string>
 </resources>

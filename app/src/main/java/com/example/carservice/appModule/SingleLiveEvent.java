@@ -17,11 +17,11 @@
 package com.example.carservice.appModule;
 
 
-import android.support.annotation.MainThread;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;

@@ -8,6 +8,17 @@
     tools:layout_editor_absoluteY="0dp">
 
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/save_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/add_photo_button"
+        app:layout_constraintTop_toBottomOf="@+id/grm_checkBox"
+        android:contentDescription="@string/add_a_photo"
+        tools:srcCompat="@tools:sample/avatars" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/brand_text_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -16,8 +27,6 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toTopOf="@+id/model_text_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -84,17 +93,17 @@
         style="@android:style/Widget.Material.Light.EditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="18dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
         android:ems="10"
         android:gravity="center"
         android:hint="@string/current_mileage_input_str"
         android:importantForAutofill="no"
         android:inputType="number"
+        android:maxLength="6"
         android:minHeight="48dp"
         android:textSize="17sp"
-        android:maxLength="6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/year_text_layout" />
@@ -103,7 +112,7 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:gravity="center"
         android:text="@string/note_before_checkboxes"
         android:textSize="20sp"
@@ -113,79 +122,60 @@
 
     <CheckBox
         android:id="@+id/oil_checkBox"
-        android:layout_width="wrap_content"
-        android:layout_height="42dp"
-        android:layout_marginStart="13dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="12dp"
-        android:layout_marginEnd="156dp"
-        android:layout_marginBottom="5dp"
         android:text="@string/oil_checker_str"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/air_filt_checkBox"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/freez_checkBox"
 
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2"
         tools:ignore="TouchTargetSizeCheck" />
 
     <CheckBox
         android:id="@+id/freez_checkBox"
-        android:layout_width="wrap_content"
-        android:layout_height="42dp"
-        android:layout_marginStart="13dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="216dp"
-        android:layout_marginBottom="5dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="36dp"
         android:text="@string/freez_checker_str"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/grm_checkBox"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/air_filt_checkBox"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
         tools:ignore="TouchTargetSizeCheck" />
 
     <CheckBox
         android:id="@+id/air_filt_checkBox"
-        android:layout_width="wrap_content"
-        android:layout_height="42dp"
-        android:layout_marginStart="13dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="132dp"
-        android:layout_marginBottom="5dp"
         android:text="@string/air_filt_checker_str"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/freez_checkBox"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@+id/grm_checkBox"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/oil_checkBox"
         tools:ignore="TouchTargetSizeCheck" />
 
     <CheckBox
         android:id="@+id/grm_checkBox"
-        android:layout_width="wrap_content"
-        android:layout_height="42dp"
-        android:layout_marginStart="13dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="276dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginEnd="36dp"
         android:text="@string/grm_checker_str"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/save_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/freez_checkBox"
         tools:ignore="TouchTargetSizeCheck" />
-
+    <!-- Переделать на material 3(filled button) -->
     <Button
         android:id="@+id/save_button"
         android:layout_width="0dp"
         android:layout_height="58dp"
         android:layout_marginStart="16dp"
-
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
         android:text="@string/save_creation_btn_str"
@@ -194,6 +184,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/add_photo_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/add_a_photo"
+        app:icon="@drawable/ic_sharp_add_a_photo_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/air_filt_checkBox" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

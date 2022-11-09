@@ -70,6 +70,4 @@ interface CarsDao {
     suspend fun editCar(carsItem: CarsItemTable)
 
 
-
-
 }

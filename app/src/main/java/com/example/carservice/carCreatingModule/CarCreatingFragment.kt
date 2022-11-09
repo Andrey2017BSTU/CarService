@@ -1,6 +1,9 @@
 package com.example.carservice.carCreatingModule
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -10,8 +13,10 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.CheckBox
 import android.widget.EditText
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.bumptech.glide.Glide
 import com.example.carservice.R
 import com.example.carservice.appModule.AppRepository
 import com.example.carservice.appModule.ServiceType
@@ -24,6 +29,8 @@ import com.google.android.material.snackbar.Snackbar
 class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterListener,
     View.OnClickListener {
 
+    private var _binding: CarCreatingBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModelObj: CarCreatingViewModel by viewModels {
         CarCreatingViewModelFactory(
@@ -36,8 +43,7 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
     }
 
-    private var _binding: CarCreatingBinding? = null
-    private val binding get() = _binding!!
+
     private var serviceTypeIs = ServiceType.OIL
 
 
@@ -146,6 +152,31 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
             }
 
         }
+        val resultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    // There are no request codes
+                    val data: Intent? = result.data
+                    Log.v("Car_creating_frag", "result OK" + " " + data.toString())
+                    //binding.currentMileageEditText.setText("323")
+                    if (data != null) {
+                        Glide.with(binding.root).load(data.data).into(binding.imageView)
+                    }
+
+
+
+                }
+            }
+        // TODO: Почему Nullable
+        binding.addPhotoButton.setOnClickListener {
+
+            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            resultLauncher.launch(intent)
+            Log.v("Car_creating_frag", "add photo clicked")
+
+
+        }
+
 
 
         binding.brandAutCompTextView.setOnItemClickListener { _, _, position, _ ->
@@ -241,6 +272,8 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
         }
 
 
+
+
         binding.currentMileageEditText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus)
                 binding.currentMileageEditText.hint = ""
@@ -265,6 +298,8 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
         binding.grmCheckBox.setOnClickListener(this)
 
 
+
+
         binding.saveButton.setOnClickListener {
             addNewCarToDataBase()
 
@@ -286,6 +321,7 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
             }
         })
+
 
 
         return binding.root
