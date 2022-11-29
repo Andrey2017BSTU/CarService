@@ -140,6 +140,9 @@ class DetailFragment : Fragment(), StartDeleteCarAlertDialog.OnDeleteListener,
                 binding.grmBottomsheetRefreshButton.visibility = View.GONE
             else binding.grmBottomsheetRefreshButton.visibility = View.VISIBLE
 
+            setImageIntoViewByUrl(it.image_uri)
+
+
         }
 
         viewModelObj.carURLMutableLiveData.observe(viewLifecycleOwner) {
@@ -244,7 +247,8 @@ class DetailFragment : Fragment(), StartDeleteCarAlertDialog.OnDeleteListener,
             bundle.putString("EXTRA_MODEL_NAME", it.model_name)
             bundle.putString("EXTRA_YEAR", it.year)
             bundle.putInt("EXTRA_CURRENT_MILEAGE", it.current_mileage)
-            bundle.putString("EXTRA_URL", it.image_url)
+            bundle.putString("EXTRA_URL", it.image_uri)
+            bundle.putString("EXTRA_URL_TMP", it.image_uri_tmp)
             bundle.putInt("EXTRA_OIL_MILEAGE", it.oil_mileage)
             bundle.putInt("EXTRA_OIL_LAST_SERVICE", it.oil_last_service_mileage)
             bundle.putInt("EXTRA_AIR_FILT_MILEAGE", it.air_filt_mileage)
@@ -253,6 +257,7 @@ class DetailFragment : Fragment(), StartDeleteCarAlertDialog.OnDeleteListener,
             bundle.putInt("EXTRA_FREEZ_LAST_SERVICE", it.freez_last_service_mileage)
             bundle.putInt("EXTRA_GRM_MILEAGE", it.grm_mileage)
             bundle.putInt("EXTRA_GRM_LAST_SERVICE", it.grm_last_service_mileage)
+            bundle.putBoolean("EXTRA_FLAG",true)
             parentFragmentManager.beginTransaction()
             parentFragmentManager.commit {
                 Log.v("Detail_fragm","commit")
@@ -397,7 +402,7 @@ class DetailFragment : Fragment(), StartDeleteCarAlertDialog.OnDeleteListener,
     private fun setImageIntoViewByUrl(url: String?) {
 
         binding.progress.visibility = View.VISIBLE
-        Glide.with(requireContext()).load(url)
+        Glide.with(binding.root).load(url)
             .listener(object : RequestListener<Drawable> {
                 override fun onLoadFailed(
                     e: GlideException?,
@@ -411,6 +416,7 @@ class DetailFragment : Fragment(), StartDeleteCarAlertDialog.OnDeleteListener,
                     setDefaultImageIntoViewByName()
                     binding.progress.visibility = View.GONE
                     Log.v("Detail", "LoadFailed")
+                    e?.logRootCauses("Glide_error_detail")
                     return true
 
                 }
@@ -424,6 +430,7 @@ class DetailFragment : Fragment(), StartDeleteCarAlertDialog.OnDeleteListener,
                 ): Boolean {
 
                     Log.v("Detail", "ResourceReady")
+                    binding.progress.visibility = View.GONE
                     return false
 
                 }

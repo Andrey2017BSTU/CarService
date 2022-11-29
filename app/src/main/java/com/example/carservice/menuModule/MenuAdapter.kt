@@ -15,16 +15,15 @@ import com.example.carservice.R
 import com.example.carservice.dataBase.CarsItemTable
 import com.example.carservice.databinding.ItemBinding
 
-class MenuAdapter(private val itemClickListener: OnItemClickListener) : RecyclerView.Adapter<MenuAdapter.ViewHolderEX>() {
+class MenuAdapter(private val itemClickListener: OnItemClickListener) :
+    RecyclerView.Adapter<MenuAdapter.ViewHolderEX>() {
 
 
     private var carsList = mutableListOf<CarsItemTable>()
 
-    interface OnItemClickListener{
+    interface OnItemClickListener {
         fun onItemClicked(carItem: CarsItemTable)
     }
-
-
 
 
     fun setCarsListAdapter(_cars: List<CarsItemTable>) {
@@ -58,17 +57,20 @@ class MenuAdapter(private val itemClickListener: OnItemClickListener) : Recycler
             String.format("%s %s", carItem.current_mileage, "км")
 
 
-        if (carItem.image_url.isNullOrEmpty()) {
+        if (carItem.image_uri.isNullOrEmpty() && carItem.image_uri_tmp.isNullOrEmpty()) {
 
             setDefaultImageIntoViewByName(holder, carItem.brand_name)
 
+        } else if (carItem.image_uri.isNullOrEmpty()) {
+
+            setImageIntoViewByUrl(holder, carItem.image_uri_tmp)
+
         } else {
 
-            setImageIntoViewByUrl(holder, carItem.image_url)
-
+            setImageIntoViewByUrl(holder, carItem.image_uri)
         }
 
-        holder.bind(carItem,itemClickListener)
+        holder.bind(carItem, itemClickListener)
     }
 
 
@@ -95,6 +97,7 @@ class MenuAdapter(private val itemClickListener: OnItemClickListener) : Recycler
                 ): Boolean {
                     e?.printStackTrace()
                     holder.binding.progress.visibility = View.VISIBLE
+                    e?.logRootCauses("Glide_error_adapter")
                     return false
 
                 }
@@ -124,18 +127,14 @@ class MenuAdapter(private val itemClickListener: OnItemClickListener) : Recycler
     }
 
 
-
     class ViewHolderEX(val binding: ItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
 
-
-        fun bind(carItem: CarsItemTable, clickListener: OnItemClickListener){
+        fun bind(carItem: CarsItemTable, clickListener: OnItemClickListener) {
 
             binding.root.setOnClickListener {
                 clickListener.onItemClicked(carItem)
             }
-
-
 
 
         }

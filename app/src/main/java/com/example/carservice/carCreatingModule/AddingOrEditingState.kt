@@ -6,8 +6,8 @@ sealed class AddingOrEditingState {
     object AnyViewEmpty : AddingOrEditingState()
     object IncorrectCurrentMileage : AddingOrEditingState()
 
-    data class SuccessCarAdding (val name: String, val model: String, val year: String, val currentMileage: String) : AddingOrEditingState()
+    data class SuccessfulCarAdding (val name: String, val model: String, val year: String, val currentMileage: String) : AddingOrEditingState()
 
-    data class SuccessCarEditing (val name: String, val model: String, val year: String, val currentMileage: String) : AddingOrEditingState()
+    data class SuccessfulCarEditing (val name: String, val model: String, val year: String, val currentMileage: String) : AddingOrEditingState()
 
 }

@@ -55,7 +55,6 @@
                     android:id="@+id/car_brand_model_name_detail_view"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="180dp"
                     android:layout_marginTop="8dp"
                     android:contentDescription="@string/detail_car_brand_model_name"
                     android:text=""
@@ -80,12 +79,12 @@
 
                 <TextView
                     android:id="@+id/current_mileage_detail_view"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:contentDescription="@string/detail_car_mileage"
                     android:text=""
-                    android:textAlignment="center"
+                    android:textAlignment="viewStart"
                     android:textAppearance="?attr/textAppearanceDisplaySmall"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/car_logo_img_view"

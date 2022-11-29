@@ -2,7 +2,9 @@ package com.example.carservice.carCreatingModule
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,6 +16,7 @@ import android.widget.ArrayAdapter
 import android.widget.CheckBox
 import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
@@ -24,6 +27,10 @@ import com.example.carservice.dataBase.AppDataBase
 import com.example.carservice.databinding.CarCreatingBinding
 import com.example.carservice.pixabayAPI.RetrofitService
 import com.google.android.material.snackbar.Snackbar
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterListener,
@@ -43,6 +50,29 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
     }
 
+    private lateinit var currentPhotoPath: String
+
+
+    private val chooserResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+
+                val dataFromResult: Intent? = result.data
+                Log.v("Car_creating_frag", "result OK" + " " + dataFromResult.toString())
+
+                if (dataFromResult != null) {
+                    if (dataFromResult.data == null) {
+                        viewModelObj.onImageAdded(currentPhotoPath)
+
+                    } else {
+
+                        viewModelObj.onImageAdded(dataFromResult.data.toString())
+
+                    }
+                }
+            }
+        }
+
 
     private var serviceTypeIs = ServiceType.OIL
 
@@ -56,8 +86,22 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
         _binding = CarCreatingBinding.inflate(inflater, container, false)
 
-        viewModelObj.carCreatingViewModelInit()
-        viewModelObj.carEditingInit(arguments)
+
+        if (arguments != null) {
+            viewModelObj.carEditingInit(arguments)
+
+        } else {
+            viewModelObj.carCreatingViewModelInit()
+        }
+
+
+        if (savedInstanceState != null) {
+            viewModelObj.onActivityRecreatedByScreenRotation()
+
+        } else {
+
+            viewModelObj.onActivityRecreatedByFirstOpen()
+        }
 
         viewModelObj.carEditingMutableLiveData.observe(viewLifecycleOwner) {
             binding.brandAutCompTextView.setText(it.brand_name)
@@ -152,26 +196,11 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
             }
 
         }
-        val resultLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    // There are no request codes
-                    val data: Intent? = result.data
-                    Log.v("Car_creating_frag", "result OK" + " " + data.toString())
-                    //binding.currentMileageEditText.setText("323")
-                    if (data != null) {
-                        Glide.with(binding.root).load(data.data).into(binding.imageView)
-                    }
 
 
-
-                }
-            }
-        // TODO: Почему Nullable
         binding.addPhotoButton.setOnClickListener {
 
-            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            resultLauncher.launch(intent)
+            chooserResultLauncher.launch(createChooserIntent())
             Log.v("Car_creating_frag", "add photo clicked")
 
 
@@ -208,65 +237,7 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
         })
 
         viewModelObj.addingOrEditingStateMutableLiveData.observe(viewLifecycleOwner) {
-            when (it) {
-
-                is AddingOrEditingState.AnyViewEmpty -> Snackbar.make(
-                    binding.root,
-                    R.string.fill_required_fields,
-                    Snackbar.LENGTH_INDEFINITE
-                ).setAction(R.string.ok_rus_str_snack_bar) { item ->
-
-                    item.visibility = View.GONE
-
-                }.show()
-
-                is AddingOrEditingState.IncorrectCurrentMileage -> Snackbar.make(
-                    binding.root,
-                    R.string.incorrect_current_mileage_str,
-                    Snackbar.LENGTH_INDEFINITE
-                ).setAction(R.string.ok_rus_str_snack_bar) { item ->
-
-                    item.visibility = View.GONE
-
-                }.show()
-
-                is AddingOrEditingState.SuccessCarAdding -> {
-                    Snackbar.make(binding.root, R.string.successful_insert, Snackbar.LENGTH_LONG)
-                        .show()
-
-                    val fragmentManager = parentFragmentManager
-                    fragmentManager.popBackStack()
-
-                }
-
-                is AddingOrEditingState.SuccessCarEditing -> {
-                    Snackbar.make(binding.root, R.string.successful_update, Snackbar.LENGTH_LONG)
-                        .show()
-                    val fragmentManager = parentFragmentManager
-                    fragmentManager.popBackStack()
-
-                }
-
-                is AddingOrEditingState.UnSuccessfulAdding -> Snackbar.make(
-                    binding.root,
-                    R.string.unsuccessful_insert,
-                    Snackbar.LENGTH_INDEFINITE
-                ).setAction(R.string.ok_rus_str_snack_bar) { item ->
-
-                    item.visibility = View.GONE
-
-                }.show()
-
-                is AddingOrEditingState.UnSuccessfulEditing -> Snackbar.make(
-                    binding.root,
-                    R.string.unsuccessful_update,
-                    Snackbar.LENGTH_INDEFINITE
-                ).setAction(R.string.ok_rus_str_snack_bar) { item ->
-
-                    item.visibility = View.GONE
-
-                }.show()
-            }
+            handle(it)
 
 
         }
@@ -322,9 +293,128 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
             }
         })
 
+        viewModelObj.imageUriMutableLiveData.observe(viewLifecycleOwner) {
+            Glide.with(binding.root).load(it).into(binding.imageView)
+
+        }
+
 
 
         return binding.root
+    }
+
+
+    private fun handle(_state: AddingOrEditingState) {
+        val snackbarString: String
+        val snackbarLength: Int
+        var snackbarActionString = ""
+
+        when (_state) {
+            AddingOrEditingState.AnyViewEmpty -> {
+                snackbarString = getString(R.string.fill_required_fields)
+                snackbarLength = Snackbar.LENGTH_INDEFINITE
+                snackbarActionString = getString(R.string.ok_rus_str_snack_bar)
+            }
+            AddingOrEditingState.IncorrectCurrentMileage -> {
+                snackbarString = getString(R.string.incorrect_current_mileage_str)
+                snackbarLength = Snackbar.LENGTH_INDEFINITE
+                snackbarActionString = getString(R.string.ok_rus_str_snack_bar)
+            }
+            is AddingOrEditingState.SuccessfulCarAdding -> {
+                snackbarString = getString(R.string.successful_insert)
+                snackbarLength = Snackbar.LENGTH_LONG
+            }
+            is AddingOrEditingState.SuccessfulCarEditing -> {
+                snackbarString = getString(R.string.successful_update)
+                snackbarLength = Snackbar.LENGTH_LONG
+            }
+            AddingOrEditingState.UnSuccessfulAdding -> {
+                snackbarString = getString(R.string.unsuccessful_insert)
+                snackbarLength = Snackbar.LENGTH_INDEFINITE
+                snackbarActionString = getString(R.string.ok_rus_str_snack_bar)
+            }
+            AddingOrEditingState.UnSuccessfulEditing -> {
+                snackbarString = getString(R.string.unsuccessful_update)
+                snackbarLength = Snackbar.LENGTH_INDEFINITE
+                snackbarActionString = getString(R.string.ok_rus_str_snack_bar)
+            }
+        }
+
+        val snackbar = Snackbar.make(binding.root,snackbarString,snackbarLength)
+
+        if (snackbarActionString == getString(R.string.ok_rus_str_snack_bar)) {
+
+            snackbar.setAction(snackbarActionString){ item ->
+                item.visibility = View.GONE
+            }
+        } else {
+            makePopBackStack()
+        }
+        snackbar.show()
+
+
+    }
+
+    private fun makePopBackStack() {
+        val fragmentManager = parentFragmentManager
+        fragmentManager.popBackStack()
+    }
+
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss",Locale.US).format(Date())
+        val storageDir: File? = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
+    }
+
+    private fun createChooserIntent(): Intent? {
+
+        val imageFromStorageIntent =
+            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        val list = ArrayList<Intent>()
+        list.add(imageFromStorageIntent)
+
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+
+            val photoFile: File? = try {
+                createImageFile()
+            } catch (ex: IOException) {
+                null
+            }
+
+
+            photoFile?.also {
+                val photoURI: Uri = FileProvider.getUriForFile(
+                    requireContext(),
+                    "com.example.android.fileprovider",
+                    it
+                )
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+
+            }
+            list.add(takePictureIntent)
+
+
+            val chooserIntent = Intent.createChooser(imageFromStorageIntent, null)
+
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, list.toTypedArray())
+
+            //resultLauncher.launch(chooserIntent)
+
+            return chooserIntent
+
+        }
+
+
     }
 
     private fun setErrorEnterOnLayout(editText: EditText, s: Editable?) {

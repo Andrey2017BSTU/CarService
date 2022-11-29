@@ -26,6 +26,7 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
     )
 
 
+    val imageUriMutableLiveData = MutableLiveData<String>()
     val brandNameMutableLiveData = MutableLiveData<List<String>>()
     val modelNameByBrandMutableLiveData = MutableLiveData<List<String>>()
     val carEditingMutableLiveData = MutableLiveData<CarsItemTable>()
@@ -36,7 +37,8 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
     val checkBoxStateMutableLiveData =
         SingleLiveEvent<CheckBoxState>()
 
-
+    private var isScreenRotated: Boolean = false
+    private var updatableUri = ""
     private var updatableCurrentMileage = 0
     private val oilServiceList = ServiceList()
     private val airFiltServiceList = ServiceList()
@@ -69,6 +71,12 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
             if (bundle != null) {
                 appRepository.getCarById(carIdFromBundle).collect {
                     carEditingMutableLiveData.postValue(it)
+                    if (!isScreenRotated){
+                        imageUriMutableLiveData.postValue(it.image_uri.toString())
+                    }else{
+                        imageUriMutableLiveData.postValue(updatableUri)
+
+                    }
                 }
             }
         }
@@ -117,22 +125,28 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
 
     }
 
+    fun onImageAdded(_uri : String){
+        updatableUri = _uri
+        imageUriMutableLiveData.postValue(updatableUri)
+    }
+
 
     private fun handleAddingOrEditingState(state: AddingOrEditingState) {
         viewModelScope.launch {
 
             when (state) {
-                is AddingOrEditingState.SuccessCarAdding -> {
+                is AddingOrEditingState.SuccessfulCarAdding -> {
 
                     val carEntity = CarsItemTable(
                         brand_name = state.name,
                         model_name = state.model,
                         year = state.year,
                         current_mileage = state.currentMileage.toInt(),
+                        image_uri = updatableUri,
                     )
                     finalCarAdding(carEntity)
                     addingOrEditingStateMutableLiveData.postValue(
-                        AddingOrEditingState.SuccessCarAdding(
+                        AddingOrEditingState.SuccessfulCarAdding(
                             state.name,
                             state.model,
                             state.year,
@@ -140,16 +154,17 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
                         )
                     )
                 }
-                is AddingOrEditingState.SuccessCarEditing -> {
+                is AddingOrEditingState.SuccessfulCarEditing -> {
                     val carEntity = CarsItemTable(
                         brand_name = state.name,
                         model_name = state.model,
                         year = state.year,
                         current_mileage = state.currentMileage.toInt(),
+                        image_uri = updatableUri,
                     )
                     finalCarEditing(carEntity)
                     addingOrEditingStateMutableLiveData.postValue(
-                        AddingOrEditingState.SuccessCarEditing(
+                        AddingOrEditingState.SuccessfulCarEditing(
                             state.name,
                             state.model,
                             state.year,
@@ -274,11 +289,11 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
 
         } else if (isEditingMode) {
 
-            handleAddingOrEditingState(AddingOrEditingState.SuccessCarEditing(name, model, year, currentMileage))
+            handleAddingOrEditingState(AddingOrEditingState.SuccessfulCarEditing(name, model, year, currentMileage))
 
         } else {
 
-            handleAddingOrEditingState(AddingOrEditingState.SuccessCarAdding(name, model, year, currentMileage))
+            handleAddingOrEditingState(AddingOrEditingState.SuccessfulCarAdding(name, model, year, currentMileage))
 
         }
 
@@ -300,7 +315,8 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
                 freez_last_service_mileage = getLastServiceMileage(ServiceType.FREEZ),
                 freez_mileage = freezServiceList.serviceInterval,
                 grm_last_service_mileage = getLastServiceMileage(ServiceType.GRM),
-                grm_mileage = grmServiceList.serviceInterval
+                grm_mileage = grmServiceList.serviceInterval,
+                image_uri = updatableUri,
             )
 
             appRepository.editCar(carItemVm)
@@ -328,7 +344,8 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
                 freez_last_service_mileage = getLastServiceMileage(ServiceType.FREEZ),
                 freez_mileage = freezServiceList.serviceInterval,
                 grm_last_service_mileage = getLastServiceMileage(ServiceType.GRM),
-                grm_mileage = grmServiceList.serviceInterval
+                grm_mileage = grmServiceList.serviceInterval,
+                image_uri = updatableUri,
             )
 
             numberOfAddedRow = appRepository.addCarToDataBase(carItemVm)
@@ -488,6 +505,14 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
 
         }
 
+    }
+
+    fun onActivityRecreatedByFirstOpen() {
+        isScreenRotated = false
+    }
+
+    fun onActivityRecreatedByScreenRotation() {
+        isScreenRotated = true
     }
 
 

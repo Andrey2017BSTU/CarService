@@ -45,6 +45,9 @@ class DetailViewModel(private var appRepository: AppRepository) : ViewModel() {
                 appRepository.getCarById(carIdFromBundle).collect {
 
                     carItemMutableLiveData.postValue(it)
+                    if (it.image_uri.isNullOrEmpty()){
+                        setImageFromApi(it.brand_name,it.model_name)
+                    }
 
                     warningsItem[ServiceType.OIL] =
                         checkWarningForService(
@@ -90,43 +93,7 @@ class DetailViewModel(private var appRepository: AppRepository) : ViewModel() {
             }
         }
 
-        viewModelScope.launch {
-            if (carBundle != null) {
 
-                appRepository.getUriByQuery(
-                    appRepository.getBrandNameByIdSingle(carIdFromBundle) + " " + appRepository.getModelNameByIdSingle(
-                        carIdFromBundle
-                    )
-                )
-                    .enqueue(object : Callback<JsonResponseModel> {
-                        override fun onResponse(
-                            call: Call<JsonResponseModel>,
-                            response: Response<JsonResponseModel>
-                        ) {
-
-                            carURLMutableLiveData.postValue(getUrlFromResponse(response))
-
-                        }
-
-                        override fun onFailure(
-                            call: Call<JsonResponseModel>,
-                            t: Throwable
-                        ) {
-
-                        }
-
-                        fun getUrlFromResponse(responseBody: Response<JsonResponseModel>) =
-                            if (responseBody.body() != null && responseBody.body()!!.total != 0) {
-                                responseBody.body()?.hits?.get(0)?.webformatURL
-                            } else ""
-
-
-                    })
-
-            }
-
-
-        }
 
         viewModelScope.launch {
 
@@ -135,6 +102,45 @@ class DetailViewModel(private var appRepository: AppRepository) : ViewModel() {
         }
 
         Log.v("VM_Detail", "Init")
+
+    }
+
+
+    private fun setImageFromApi(brandName: String, modelName: String) {
+
+        viewModelScope.launch {
+
+            val brandModelNamesQuery = "$brandName+$modelName"
+
+            appRepository.getUriByQuery(brandModelNamesQuery)
+                .enqueue(object : Callback<JsonResponseModel> {
+                    override fun onResponse(
+                        call: Call<JsonResponseModel>,
+                        response: Response<JsonResponseModel>
+                    ) {
+
+                        carURLMutableLiveData.postValue(getUrlFromResponse(response))
+
+                    }
+
+                    override fun onFailure(
+                        call: Call<JsonResponseModel>,
+                        t: Throwable
+                    ) {
+                        Log.v("VM_Detail", "Failure Response " + t.message)
+                    }
+
+                    fun getUrlFromResponse(responseBody: Response<JsonResponseModel>) =
+                        if (responseBody.body() != null && responseBody.body()!!.total != 0) {
+                            responseBody.body()?.hits?.get(0)?.webformatURL
+                        } else ""
+
+
+                })
+
+
+        }
+
 
     }
 

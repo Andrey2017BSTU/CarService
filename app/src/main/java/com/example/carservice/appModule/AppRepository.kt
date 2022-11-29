@@ -27,7 +27,6 @@ class AppRepository(
 
     fun getCarById(carId: Int): Flow<CarsItemTable> = dataBaseObj.dao().getCarById(carId)
 
-
     fun getUriByQuery(@Query("q") q: String) = _retrofitService.getImageUriByQ(q)
 
     suspend fun deleteCarById(carId: Int) = dataBaseObj.dao().deleteCarById(carId)
@@ -37,14 +36,6 @@ class AppRepository(
     suspend fun getCurrentMileageByIdSingle(carId: Int) = dataBaseObj.dao().getCurrentMileageByIdSingle(carId)
 
     suspend fun updateCurrentMileageById (carId: Int, updatedCurrentMileage: Int) = dataBaseObj.dao().updateCurrentMileageById(carId,updatedCurrentMileage)
-
-    fun getBrandNameById(carId: Int) = dataBaseObj.dao().getBrandNameByCarId(carId)
-
-    fun getModelNameById(carId: Int) = dataBaseObj.dao().getModelNameById(carId)
-
-    suspend fun getBrandNameByIdSingle(carId: Int) = dataBaseObj.dao().getBrandNameByCarIdSingle(carId)
-
-    suspend fun getModelNameByIdSingle(carId: Int) = dataBaseObj.dao().getModelNameByIdSingle(carId)
 
     suspend fun updateOilMileageToService(updatedMileage: Int, carId: Int) = dataBaseObj.dao().updateOilMileageToService(updatedMileage,carId)
 
@@ -57,8 +48,5 @@ class AppRepository(
     suspend fun  getCarByIdSingle(carId: Int) = dataBaseObj.dao().getCarByIdSingle(carId)
 
     suspend fun editCar(carItem: CarsItemTable) = dataBaseObj.dao().editCar(carItem)
-
-
-
 
 }

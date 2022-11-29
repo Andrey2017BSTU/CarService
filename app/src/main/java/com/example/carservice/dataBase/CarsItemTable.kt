@@ -32,14 +32,15 @@ data class CarsItemTable(
     @ColumnInfo(name = "grm_last_service_mileage")
     val grm_last_service_mileage: Int = 0,
     @ColumnInfo(name = "grm_mileage")
-    val grm_mileage: Int = 0
-
+    val grm_mileage: Int = 0,
+    @ColumnInfo(name = "image_uri")
+    val image_uri: String? = "" ,
 
     )
 
 {
     @Ignore
-    var image_url: String? = ""
+    var image_uri_tmp: String? = ""
 }
 
 

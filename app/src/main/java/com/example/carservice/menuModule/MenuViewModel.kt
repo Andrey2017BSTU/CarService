@@ -38,13 +38,14 @@ class MenuViewModel(private var appRepository: AppRepository) : ViewModel() {
                                 response: Response<JsonResponseModel>
                             ) {
 
-                                item[n].image_url = getUrlFromResponse(response)!!
+                                item[n].image_uri_tmp = getUrlFromResponse(response)!!
                                 recyclerListLiveData.postValue(item)
+
                             }
 
 
                             override fun onFailure(call: Call<JsonResponseModel>, t: Throwable) {
-                                Log.v("VM_Menu", "Failure Response")
+                                Log.v("VM_Menu", "Failure Response " + t.message)
                             }
                         })
 
