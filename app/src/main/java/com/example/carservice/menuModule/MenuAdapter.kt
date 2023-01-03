@@ -76,7 +76,7 @@ class MenuAdapter(private val itemClickListener: OnItemClickListener) :
 
     private fun setDefaultImageIntoViewByName(holder: ViewHolderEX, brandName: String) {
         when (brandName) {
-            "BMW" -> holder.binding.ImageViewCarItem.setImageResource(R.drawable.bmw_logo_2020_grey)
+            "BMW" -> holder.binding.ImageViewCarItem.setImageResource(R.drawable.bmw_logo)
             "MERCEDES-BENZ" -> holder.binding.ImageViewCarItem.setImageResource(R.drawable.mercedes_logo)
             "AUDI" -> holder.binding.ImageViewCarItem.setImageResource(R.drawable.audi_logo)
             "VOLKSWAGEN" -> holder.binding.ImageViewCarItem.setImageResource(R.drawable.volkswagen_logo)

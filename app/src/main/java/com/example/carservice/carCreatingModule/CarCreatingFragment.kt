@@ -17,6 +17,7 @@ import android.widget.CheckBox
 import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
@@ -32,7 +33,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-
+// TODO: Работу с файлами перенести в репозиторий(другая ветка)
 class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterListener,
     View.OnClickListener {
 
@@ -87,37 +88,20 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
         _binding = CarCreatingBinding.inflate(inflater, container, false)
 
 
+
         if (arguments != null) {
-            viewModelObj.carEditingInit(arguments)
+            viewModelObj.carEditingViewModelInit(arguments)
 
         } else {
             viewModelObj.carCreatingViewModelInit()
         }
-
-
+// TODO: Поискать другой способ получения состояния экрана (land/port)
         if (savedInstanceState != null) {
             viewModelObj.onActivityRecreatedByScreenRotation()
 
         } else {
 
             viewModelObj.onActivityRecreatedByFirstOpen()
-        }
-
-        viewModelObj.carEditingMutableLiveData.observe(viewLifecycleOwner) {
-            binding.brandAutCompTextView.setText(it.brand_name)
-            binding.modelAutCompTextView.setText(it.model_name)
-
-
-            binding.yearAutCompTextView.setText(it.year)
-            binding.yearAutCompTextView.setAdapter(
-                ArrayAdapter(
-                    requireContext(),
-                    R.layout.drop_down_item,
-                    viewModelObj.getListOfYears()
-                )
-            )
-            binding.currentMileageEditText.setText(it.current_mileage.toString())
-
         }
 
 
@@ -221,17 +205,18 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
             }
 
-            /// TODO: Баг: Если не выбрать марку и перевернуть экран - ошибка с Null. Почему при перевороте срабатывает? Upd: Исправил с помощью проверки, протестить(мб добавить в остальные TextWatcher)
+            // TODO: Протестить разницу
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (p0.toString() != "") {
-                    viewModelObj.getModelNameByBrandName(p0.toString())
-                }
-
-                Log.v("car_Creating_Selected_Brand_onTextChanged", p0.toString())
+                Log.v("car_Creating_Selected_Brand", p0.toString())
             }
 
             override fun afterTextChanged(p0: Editable?) {
-                Log.v("car_Creating_Selected_Brand_afterTextChanged", p0.toString())
+                if (p0 != null){
+                    if (p0.isNotEmpty()){
+                        viewModelObj.getModelNameByBrandName(p0.toString())
+                    }
+
+                }
 
             }
         })
@@ -253,15 +238,8 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
         }
 
-        binding.yearAutCompTextView.setAdapter(
-            ArrayAdapter(
-                requireContext(),
-                R.layout.drop_down_item,
-                viewModelObj.getListOfYears()
-            )
 
-        )
-        Log.v("Car_creating_adapt", "year")
+
 
         binding.oilCheckBox.setOnClickListener(this)
         binding.airFiltCheckBox.setOnClickListener(this)
@@ -280,6 +258,7 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
             override fun afterTextChanged(s: Editable?) {
                 if (s.toString() != "") {
                     onCurrentMileageChanged(s)
+                    Log.v("TextWatcher",s.toString())
                 }
                 setErrorEnterOnLayout(binding.currentMileageEditText, s)
 
@@ -298,6 +277,38 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
         }
 
+
+        viewModelObj.updatableCurrentMileageMutableLiveDataSingle.observe(viewLifecycleOwner){
+
+            binding.currentMileageEditText.setText(it.toString())
+            Log.v("updatableCurrentMileageMutableLiveData",it.toString())
+
+        }
+
+        viewModelObj.updatableCarBrandNameMutableLiveDataSingle.observe(viewLifecycleOwner){
+            binding.brandAutCompTextView.setText(it)
+
+        }
+
+        viewModelObj.updatableCarModelNameMutableLiveDataSingle.observe(viewLifecycleOwner){
+            binding.modelAutCompTextView.setText(it)
+        }
+
+        viewModelObj.updatableYearMutableLiveDataSingle.observe(viewLifecycleOwner){
+            binding.yearAutCompTextView.setText(it)
+
+        }
+
+        viewModelObj.listOfYearsMutableLiveData.observe(viewLifecycleOwner){
+            binding.yearAutCompTextView.setAdapter(
+                ArrayAdapter(
+                    requireContext(),
+                    R.layout.drop_down_item,
+                    it
+                )
+            )
+
+        }
 
 
         return binding.root
@@ -537,9 +548,13 @@ class CarCreatingFragment : Fragment(), StartCheckBoxMileageAlertDialog.OnEnterL
 
     private fun handleCheckBox(serviceType: ServiceType, isChecked: Boolean) {
         if (isChecked) {
-
-            viewModelObj.startAlertDialog(parentFragmentManager, serviceType)
-
+// TODO: Протестить перенос в запууска диалога из viewModel сюда
+           // viewModelObj.startAlertDialog(parentFragmentManager, serviceType)
+            val bundle = Bundle ()
+            val alertDialogObj: DialogFragment = StartCheckBoxMileageAlertDialog()
+            bundle.putString("SERVICE_TYPE_EXTRA",serviceType.toString())
+            alertDialogObj.arguments = bundle
+            alertDialogObj.show(parentFragmentManager, "mileage")
         } else {
 
             checkboxOffById(serviceType)
