@@ -86,7 +86,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/car_year_detail_view" />
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/mileages_list_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -97,7 +97,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/current_mileage_detail_view" />
 
             <TextView
-                android:id="@+id/textView6"
+                android:id="@+id/oil_mileage_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -105,10 +105,10 @@
                 android:text="@string/oil_checker_str"
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView4" />
+                app:layout_constraintTop_toBottomOf="@+id/mileages_list_label" />
 
             <TextView
-                android:id="@+id/textView7"
+                android:id="@+id/freez_mileage_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -116,10 +116,10 @@
                 android:text="@string/freez_checker_str"
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView6" />
+                app:layout_constraintTop_toBottomOf="@+id/oil_mileage_label" />
 
             <TextView
-                android:id="@+id/textView9"
+                android:id="@+id/air_filt_mileage_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -127,10 +127,10 @@
                 android:text="@string/air_filt_checker_str"
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView7" />
+                app:layout_constraintTop_toBottomOf="@+id/freez_mileage_label" />
 
             <TextView
-                android:id="@+id/textView10"
+                android:id="@+id/grm_mileage_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -138,7 +138,7 @@
                 android:text="@string/grm_checker_str"
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView9" />
+                app:layout_constraintTop_toBottomOf="@+id/air_filt_mileage_label" />
 
             <TextView
                 android:id="@+id/oil_mileage_detail_View"
@@ -149,7 +149,7 @@
                 android:text=""
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView4" />
+                app:layout_constraintTop_toBottomOf="@+id/mileages_list_label" />
 
             <TextView
                 android:id="@+id/freez_mileage_detail_view"
@@ -184,18 +184,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/air_filt_mileage_detail_View" />
 
-            <androidx.coordinatorlayout.widget.CoordinatorLayout
-                android:id="@+id/coordinatorLayout"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginTop="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/car_logo_img_view"
-                app:layout_constraintVertical_bias="0.0">
 
-
-            </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -209,7 +198,7 @@
         android:layout_height="400dp"
         app:backgroundTint="?attr/colorSurface"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="70dp"
+        app:behavior_peekHeight="50dp"
         app:layout_behavior="@string/bottom_sheet_behavior">
 
         <TextView
@@ -217,7 +206,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="10dp"
             android:text="@string/detail_bottomsheet_headline_str"
 
             android:textAppearance="?attr/textAppearanceTitleLarge"

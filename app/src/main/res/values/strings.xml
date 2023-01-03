@@ -12,8 +12,8 @@
     <string name="save_creation_btn_str">Сохранить</string>
     <string name="add_car_btn_str">Добавить автомобиль</string>
     <string name="changing_hint_colors"><font color="#FF0000" size="54">Выберите марку автомобиля</font></string>
-    <string name="last_service_mileage_dialog_hint_str"><font size="46" >Пробег на момент последней замены</font></string>
-    <string name="service_interval_dialog_hint_str"><font size="46" >Интервал замены</font></string>
+    <string name="last_service_mileage_dialog_hint_str">Пробег на момент последней замены</string>
+    <string name="service_interval_dialog_hint_str">Интервал замены</string>
     <string name="current_mileage_check_box_dialog_str">Текущий пробег</string>
     <string name="current_mileage_update_input_str">Введите обновлённый пробег автомобиля</string>
     <string name="update_current_mileage_option_str">Обновить текущий пробег</string>

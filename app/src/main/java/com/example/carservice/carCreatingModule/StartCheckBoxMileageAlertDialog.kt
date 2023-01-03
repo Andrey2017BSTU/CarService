@@ -15,7 +15,8 @@ import com.example.carservice.appModule.ServiceType
 import com.example.carservice.databinding.CheckBoxAlertDialogCustomLayoutBinding
 import com.google.android.material.textfield.TextInputLayout
 
-class StartCheckBoxMileageAlertDialog(private val serviceType: ServiceType) : DialogFragment() {
+
+class StartCheckBoxMileageAlertDialog : DialogFragment() {
 
     private var _binding: CheckBoxAlertDialogCustomLayoutBinding? = null
     private val binding get() = _binding!!
@@ -36,8 +37,8 @@ class StartCheckBoxMileageAlertDialog(private val serviceType: ServiceType) : Di
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        try {
-            mListener = parentFragmentManager.findFragmentByTag("car_create") as OnEnterListener
+        mListener = try {
+            parentFragmentManager.findFragmentByTag("car_create") as OnEnterListener
         } catch (e: Exception) {
             throw ClassCastException(
                 parentFragmentManager.findFragmentByTag("car_create")
@@ -54,9 +55,13 @@ class StartCheckBoxMileageAlertDialog(private val serviceType: ServiceType) : Di
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-
+        super.onCreateDialog(savedInstanceState)
         _binding = CheckBoxAlertDialogCustomLayoutBinding.inflate(layoutInflater)
         val builder = AlertDialog.Builder(binding.root.context)
+
+        val serviceType =
+            requireArguments().getString("SERVICE_TYPE_EXTRA")
+
 
 
 
@@ -105,10 +110,10 @@ class StartCheckBoxMileageAlertDialog(private val serviceType: ServiceType) : Di
 
 
         when (serviceType) {
-            ServiceType.OIL -> builder.setTitle("Моторное масло")
-            ServiceType.AIR_FILT -> builder.setTitle("Воздушный фильтр")
-            ServiceType.FREEZ -> builder.setTitle("Антифриз")
-            ServiceType.GRM -> builder.setTitle("ГРМ")
+            ServiceType.OIL.toString() -> builder.setTitle("Моторное масло")
+            ServiceType.AIR_FILT.toString() -> builder.setTitle("Воздушный фильтр")
+            ServiceType.FREEZ.toString() -> builder.setTitle("Антифриз")
+            ServiceType.GRM.toString() -> builder.setTitle("ГРМ")
         }
 
 
@@ -116,22 +121,21 @@ class StartCheckBoxMileageAlertDialog(private val serviceType: ServiceType) : Di
         builder.setView(binding.root)
         builder.setPositiveButton(R.string.ok_rus_str) { _, _ ->
 
-                if (!binding.currentMileageCheckbox.isChecked) {
-                    mListener.onPositiveButtonClicked(
-                        binding.serviceIntervalEditText.text.toString(),
-                        binding.lastServiceMileageEditText.text.toString(),
-                        false
-                    )
+            if (!binding.currentMileageCheckbox.isChecked) {
+                mListener.onPositiveButtonClicked(
+                    binding.serviceIntervalEditText.text.toString(),
+                    binding.lastServiceMileageEditText.text.toString(),
+                    false
+                )
 
-                } else {
-                    mListener.onPositiveButtonClicked(
-                        binding.serviceIntervalEditText.text.toString(),
-                        0.toString(),
-                        true
-                    )
-                }
+            } else {
+                mListener.onPositiveButtonClicked(
+                    binding.serviceIntervalEditText.text.toString(),
+                    0.toString(),
+                    true
+                )
             }
-
+        }
 
 
             .setNeutralButton(R.string.cancel_rus_str) { dialogInterface, _ ->

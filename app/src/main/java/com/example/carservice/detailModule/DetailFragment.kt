@@ -73,6 +73,8 @@ class DetailFragment : Fragment(), StartDeleteCarAlertDialog.OnDeleteListener,
 
         }
 
+        appendColonsOnListOfMileagesLabels()
+
         viewModelObj.carItemMutableLiveData.observe(viewLifecycleOwner) {
             binding.carBrandModelNameDetailView.text = String.format("%s", it.brand_name)
             binding.carBrandModelNameDetailView.append(String.format(" %s", it.model_name))
@@ -206,6 +208,14 @@ class DetailFragment : Fragment(), StartDeleteCarAlertDialog.OnDeleteListener,
         return binding.root
     }
 
+    private fun appendColonsOnListOfMileagesLabels() {
+        binding.oilMileageLabel.append(": ")
+        binding.freezMileageLabel.append(": ")
+        binding.airFiltMileageLabel.append(": ")
+        binding.grmMileageLabel.append(": ")
+
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val menuHost: MenuHost = requireActivity()
@@ -255,11 +265,11 @@ class DetailFragment : Fragment(), StartDeleteCarAlertDialog.OnDeleteListener,
             bundle.putInt("EXTRA_GRM_LAST_SERVICE", it.grm_last_service_mileage)
             parentFragmentManager.beginTransaction()
             parentFragmentManager.commit {
-                Log.v("Detail_fragm","commit")
-                val carCreating = CarCreatingFragment()
-                carCreating.arguments = bundle
+                Log.v("Detail_fragm", "commit")
+                val carCreatingFragment = CarCreatingFragment()
+                carCreatingFragment.arguments = bundle
                 setReorderingAllowed(true)
-                replace(R.id.fr, carCreating, "car_create")
+                replace(R.id.fr, carCreatingFragment, "car_create")
                 addToBackStack(null)
             }
         }
@@ -422,7 +432,7 @@ class DetailFragment : Fragment(), StartDeleteCarAlertDialog.OnDeleteListener,
                     dataSource: DataSource?,
                     isFirstResource: Boolean
                 ): Boolean {
-
+                    binding.progress.visibility = View.GONE
                     Log.v("Detail", "ResourceReady")
                     return false
 
@@ -440,7 +450,7 @@ class DetailFragment : Fragment(), StartDeleteCarAlertDialog.OnDeleteListener,
         viewModelObj.brandNameMutableLiveData.observe(viewLifecycleOwner) {
 
             when (it) {
-                "BMW" -> binding.carLogoImgView.setImageResource(R.drawable.bmw_logo_2020_grey)
+                "BMW" -> binding.carLogoImgView.setImageResource(R.drawable.bmw_logo)
                 "MERCEDES-BENZ" -> binding.carLogoImgView.setImageResource(R.drawable.mercedes_logo)
                 "AUDI" -> binding.carLogoImgView.setImageResource(R.drawable.audi_logo)
                 "VOLKSWAGEN" -> binding.carLogoImgView.setImageResource(R.drawable.volkswagen_logo)

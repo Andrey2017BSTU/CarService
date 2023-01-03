@@ -108,10 +108,10 @@ class MenuFragment : Fragment(), MenuAdapter.OnItemClickListener {
         parentFragmentManager.beginTransaction()
         parentFragmentManager.commit {
 
-            val detail = DetailFragment()
-            detail.arguments = bundle
+            val detailFragment = DetailFragment()
+            detailFragment.arguments = bundle
             setReorderingAllowed(true)
-            replace(R.id.fr, detail, "detail")
+            replace(R.id.fr, detailFragment, "detail")
             addToBackStack(null)
 
         }

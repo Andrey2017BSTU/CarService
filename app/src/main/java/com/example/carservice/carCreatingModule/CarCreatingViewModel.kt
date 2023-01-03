@@ -3,8 +3,6 @@ package com.example.carservice.carCreatingModule
 import android.os.Bundle
 import android.text.Editable
 import android.util.Log
-import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,15 +26,18 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
 
     val brandNameMutableLiveData = MutableLiveData<List<String>>()
     val modelNameByBrandMutableLiveData = MutableLiveData<List<String>>()
-    val carEditingMutableLiveData = MutableLiveData<CarsItemTable>()
-
+    val updatableCurrentMileageMutableLiveDataSingle = SingleLiveEvent<Int>()
+    val updatableCarBrandNameMutableLiveDataSingle = SingleLiveEvent<String>()
+    val updatableCarModelNameMutableLiveDataSingle = SingleLiveEvent<String>()
+    val updatableYearMutableLiveDataSingle = SingleLiveEvent<String>()
+    val listOfYearsMutableLiveData = MutableLiveData<List<Int>>()
 
     val addingOrEditingStateMutableLiveData =
         SingleLiveEvent<AddingOrEditingState>()
     val checkBoxStateMutableLiveData =
         SingleLiveEvent<CheckBoxState>()
 
-
+    private var isScreenRotated: Boolean = false
     private var updatableCurrentMileage = 0
     private val oilServiceList = ServiceList()
     private val airFiltServiceList = ServiceList()
@@ -51,6 +52,7 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
         viewModelScope.launch {
             appRepository.getBrandsOfCars().collect { item ->
                 brandNameMutableLiveData.postValue(item)
+                listOfYearsMutableLiveData.postValue(getListOfYears())
 
             }
 
@@ -60,7 +62,7 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
 
     }
 
-    fun carEditingInit(bundle: Bundle?) {
+    fun carEditingViewModelInit(bundle: Bundle?) {
 
         viewModelScope.launch {
             if (bundle != null) {
@@ -68,23 +70,32 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
             }
             if (bundle != null) {
                 appRepository.getCarById(carIdFromBundle).collect {
-                    carEditingMutableLiveData.postValue(it)
+
+                    if (!isScreenRotated) {
+                        updatableCurrentMileageMutableLiveDataSingle.postValue(it.current_mileage)
+                        updatableCarBrandNameMutableLiveDataSingle.postValue(it.brand_name)
+                        updatableCarModelNameMutableLiveDataSingle.postValue(it.model_name)
+                        updatableYearMutableLiveDataSingle.postValue(it.year)
+                        listOfYearsMutableLiveData.postValue(getListOfYears())
+                        Log.v("CreatingVm", "screen not rotated")
+                    }
+
+
                 }
             }
+        }
+        viewModelScope.launch {
+            appRepository.getBrandsOfCars().collect { item ->
+                brandNameMutableLiveData.postValue(item)
+
+            }
+
         }
 
         isEditingMode = true
 
     }
 
-
-    fun startAlertDialog(_parentFragmentManager: FragmentManager, serviceType: ServiceType) {
-
-        val alertDialogObj: DialogFragment = StartCheckBoxMileageAlertDialog(serviceType)
-        alertDialogObj.show(_parentFragmentManager, "mileage")
-
-
-    }
 
     fun getModelNameByBrandId(brand_id: Int) {
         viewModelScope.launch {
@@ -107,7 +118,7 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
     }
 
 
-    fun getListOfYears(): List<Int> {
+    private fun getListOfYears(): List<Int> {
 
         val years = mutableListOf<Int>()
         for (n in 1999..Calendar.getInstance().get(Calendar.YEAR)) {
@@ -157,12 +168,18 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
                         )
                     )
                 }
-                AddingOrEditingState.AnyViewEmpty -> addingOrEditingStateMutableLiveData.postValue(AddingOrEditingState.AnyViewEmpty)
+                AddingOrEditingState.AnyViewEmpty -> addingOrEditingStateMutableLiveData.postValue(
+                    AddingOrEditingState.AnyViewEmpty
+                )
                 AddingOrEditingState.IncorrectCurrentMileage -> addingOrEditingStateMutableLiveData.postValue(
                     AddingOrEditingState.IncorrectCurrentMileage
                 )
-                AddingOrEditingState.UnSuccessfulAdding -> addingOrEditingStateMutableLiveData.postValue(AddingOrEditingState.UnSuccessfulAdding)
-                AddingOrEditingState.UnSuccessfulEditing -> addingOrEditingStateMutableLiveData.postValue(AddingOrEditingState.UnSuccessfulEditing)
+                AddingOrEditingState.UnSuccessfulAdding -> addingOrEditingStateMutableLiveData.postValue(
+                    AddingOrEditingState.UnSuccessfulAdding
+                )
+                AddingOrEditingState.UnSuccessfulEditing -> addingOrEditingStateMutableLiveData.postValue(
+                    AddingOrEditingState.UnSuccessfulEditing
+                )
             }
         }
 
@@ -274,11 +291,25 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
 
         } else if (isEditingMode) {
 
-            handleAddingOrEditingState(AddingOrEditingState.SuccessCarEditing(name, model, year, currentMileage))
+            handleAddingOrEditingState(
+                AddingOrEditingState.SuccessCarEditing(
+                    name,
+                    model,
+                    year,
+                    currentMileage
+                )
+            )
 
         } else {
 
-            handleAddingOrEditingState(AddingOrEditingState.SuccessCarAdding(name, model, year, currentMileage))
+            handleAddingOrEditingState(
+                AddingOrEditingState.SuccessCarAdding(
+                    name,
+                    model,
+                    year,
+                    currentMileage
+                )
+            )
 
         }
 
@@ -488,6 +519,14 @@ class CarCreatingViewModel(private var appRepository: AppRepository) : ViewModel
 
         }
 
+    }
+
+    fun onActivityRecreatedByScreenRotation() {
+        isScreenRotated = true
+    }
+
+    fun onActivityRecreatedByFirstOpen() {
+        isScreenRotated = false
     }
 
 
